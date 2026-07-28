@@ -1,0 +1,1706 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía PGC Pro v2.0 — Plan General de Contabilidad</title>
+<style>
+/* ========== THEME VARIABLES ========== */
+:root, [data-theme="light"] {
+    --primary:#1a73e8;--primary-light:#e8f0fe;--primary-dark:#1557b0;
+    --success:#0d904f;--success-light:#e6f4ea;
+    --danger:#c5221f;--danger-light:#fce8e6;
+    --warning:#e37400;--warning-light:#fef7e0;
+    --sidebar-bg:#1e293b;--sidebar-hover:#334155;--sidebar-active:#1a73e8;
+    --bg:#f1f5f9;--card:#ffffff;--text:#1e293b;--text-secondary:#64748b;
+    --border:#e2e8f0;--shadow:0 1px 3px rgba(0,0,0,.1);--shadow-md:0 4px 12px rgba(0,0,0,.1);
+    --radius:10px;--tab-active-bg:#e8f0fe;--table-hover:#f8fafc;
+    --input-bg:#fff;--modal-overlay:rgba(0,0,0,.5);--invoice-bg:#fff;
+    --topbar-bg:#ffffff;
+}
+[data-theme="dark"] {
+    --primary:#60a5fa;--primary-light:#1e3a5f;--primary-dark:#93bbfd;
+    --success:#4ade80;--success-light:#14532d;
+    --danger:#f87171;--danger-light:#450a0a;
+    --warning:#fbbf24;--warning-light:#451a03;
+    --bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--text-secondary:#94a3b8;
+    --border:#334155;--shadow:0 1px 3px rgba(0,0,0,.3);--shadow-md:0 4px 12px rgba(0,0,0,.4);
+    --sidebar-bg:#0f172a;--sidebar-hover:#1e293b;--sidebar-active:#3b82f6;
+    --tab-active-bg:#1e3a5f;--table-hover:#253348;
+    --input-bg:#1e293b;--modal-overlay:rgba(0,0,0,.7);--invoice-bg:#f8fafc;
+    --topbar-bg:#1e293b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;transition:background .3s,color .3s;}
+/* SIDEBAR */
+#sidebar{width:260px;background:var(--sidebar-bg);color:#e2e8f0;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;transition:transform .3s;overflow-y:auto;}
+.sidebar-header{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.1);}
+.sidebar-header h1{font-size:18px;font-weight:700;color:#fff;}
+.sidebar-header p{font-size:11px;color:#94a3b8;margin-top:4px;}
+.sidebar-nav{flex:1;padding:8px 0;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;transition:all .15s;color:#cbd5e1;font-size:13px;border-left:3px solid transparent;}
+.nav-item:hover{background:var(--sidebar-hover);color:#fff;}
+.nav-item.active{background:rgba(26,115,232,.15);color:#60a5fa;border-left-color:var(--primary);font-weight:600;}
+.nav-item .icon{font-size:16px;width:22px;text-align:center;}
+.nav-section{padding:12px 16px 4px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#64748b;font-weight:600;}
+/* MAIN */
+#main{margin-left:260px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+#topbar{background:var(--topbar-bg);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;transition:background .3s;}
+#hamburger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:var(--text);}
+#search-box{flex:1;max-width:500px;position:relative;}
+#search-box input{width:100%;padding:10px 14px 10px 38px;border:2px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:border-color .2s;background:var(--input-bg);color:var(--text);}
+#search-box input:focus{border-color:var(--primary);}
+#search-box .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-secondary);}
+#content{padding:24px;flex:1;}
+/* CARDS */
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-bottom:16px;transition:background .3s,box-shadow .3s;}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.card-header h2{font-size:18px;font-weight:700;}
+.card-header .badge{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:600;}
+.badge-debe{background:var(--danger-light);color:var(--danger);}
+.badge-haber{background:var(--success-light);color:var(--success);}
+.badge-info{background:var(--primary-light);color:var(--primary);}
+.badge-warning{background:var(--warning-light);color:var(--warning);}
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:16px;}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+/* STAT CARDS */
+.stat-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;border:2px solid transparent;}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);border-color:var(--primary);}
+.stat-card .stat-icon{font-size:28px;margin-bottom:8px;}
+.stat-card .stat-value{font-size:22px;font-weight:800;color:var(--primary);}
+.stat-card .stat-label{font-size:12px;color:var(--text-secondary);margin-top:2px;}
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th{text-align:left;padding:10px 12px;background:var(--bg);font-weight:600;color:var(--text-secondary);font-size:12px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--border);}
+td{padding:10px 12px;border-bottom:1px solid var(--border);}
+tr:hover td{background:var(--table-hover);}
+.amount{font-family:'SF Mono','Consolas',monospace;font-weight:600;}
+.amount-debe{color:var(--danger);}
+.amount-haber{color:var(--success);}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-dark);}
+.btn-outline{background:transparent;border:2px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);}
+.btn-success{background:var(--success);color:#fff;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.btn-lg{padding:12px 24px;font-size:16px;}
+/* TAGS */
+.tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;}
+.tag-asset{background:#dbeafe;color:#1e40af;}
+.tag-liability{background:#fce7f3;color:#9d174d;}
+.tag-equity{background:#ede9fe;color:#5b21b6;}
+.tag-expense{background:#fee2e2;color:#991b1b;}
+.tag-income{background:#d1fae5;color:#065f46;}
+[data-theme="dark"] .tag-asset{background:#1e3a5f;color:#60a5fa;}
+[data-theme="dark"] .tag-liability{background:#4a1942;color:#f472b6;}
+[data-theme="dark"] .tag-equity{background:#3b1f7a;color:#a78bfa;}
+[data-theme="dark"] .tag-expense{background:#450a0a;color:#fca5a5;}
+[data-theme="dark"] .tag-income{background:#14532d;color:#86efac;}
+/* WIZARD */
+.wizard-container{max-width:700px;margin:0 auto;}
+.wizard-step{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-md);padding:28px;margin-bottom:20px;}
+.wizard-step h3{font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.wizard-progress{display:flex;gap:4px;margin-bottom:24px;}
+.wizard-progress .step-dot{flex:1;height:4px;border-radius:2px;background:var(--border);}
+.wizard-progress .step-dot.active{background:var(--primary);}
+.wizard-progress .step-dot.done{background:var(--success);}
+.option-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+.option-card{padding:14px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s;text-align:center;}
+.option-card:hover{border-color:var(--primary);background:var(--primary-light);}
+.option-card.selected{border-color:var(--primary);background:var(--primary-light);}
+.option-card .opt-icon{font-size:28px;margin-bottom:6px;}
+.option-card .opt-label{font-size:13px;font-weight:600;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:border-color .2s;background:var(--input-bg);color:var(--text);}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--primary);}
+.wizard-actions{display:flex;justify-content:space-between;margin-top:20px;}
+/* ENTRY RESULT */
+.entry-result{border:2px solid var(--success);border-radius:var(--radius);overflow:hidden;}
+.entry-result th{background:var(--success);color:#fff;}
+.entry-result tr:hover td{background:#f0fdf4 !important;}
+.entry-total td{font-weight:700;background:#f8fafc !important;border-top:2px solid var(--success);}
+/* ACCOUNT TREE */
+.account-tree{list-style:none;}
+.account-tree li{padding:6px 0;}
+.account-tree .group-header{font-weight:700;cursor:pointer;padding:10px 12px;border-radius:8px;transition:background .15s;display:flex;align-items:center;gap:8px;}
+.account-tree .group-header:hover{background:var(--primary-light);}
+.account-tree .group-header .arrow{transition:transform .2s;font-size:12px;}
+.account-tree .group-header.open .arrow{transform:rotate(90deg);}
+.account-tree .subgroup-list{list-style:none;padding-left:28px;display:none;}
+.account-tree .subgroup-list.show{display:block;}
+.account-tree .subgroup-item{padding:6px 10px;border-radius:6px;cursor:pointer;font-size:13px;transition:background .15s;}
+.account-tree .subgroup-item:hover{background:var(--bg);}
+/* ACCOUNT DETAIL */
+.account-detail{border-left:4px solid var(--primary);padding-left:16px;}
+.account-detail h3{font-size:20px;margin-bottom:8px;}
+.account-detail .meta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+/* RULES BOX */
+.rule-box{padding:14px 16px;border-radius:8px;margin-bottom:12px;border-left:4px solid;}
+.rule-box.debe{background:var(--danger-light);border-color:var(--danger);}
+.rule-box.haber{background:var(--success-light);border-color:var(--success);}
+.rule-box h4{font-size:14px;margin-bottom:4px;}
+.rule-box ul{margin-left:18px;font-size:13px;}
+/* OPERATION CARD */
+.op-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;transition:all .2s;cursor:pointer;}
+.op-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.op-card-header{padding:16px;display:flex;align-items:center;gap:12px;}
+.op-card-header .op-icon{font-size:32px;}
+.op-card-header h3{font-size:15px;font-weight:700;}
+.op-card-header p{font-size:12px;color:var(--text-secondary);margin-top:2px;}
+.op-card-body{padding:0 16px 16px;display:none;}
+.op-card.expanded .op-card-body{display:block;}
+/* TIP/ERROR BOX */
+.tip-box{padding:12px 16px;border-radius:8px;background:var(--warning-light);border-left:4px solid var(--warning);margin-top:12px;font-size:13px;}
+.tip-box strong{color:var(--warning);}
+.error-box{padding:12px 16px;border-radius:8px;background:var(--danger-light);border-left:4px solid var(--danger);margin-top:12px;font-size:13px;}
+.error-box strong{color:var(--danger);}
+.info-box{padding:12px 16px;border-radius:8px;background:var(--primary-light);border-left:4px solid var(--primary);margin-top:12px;font-size:13px;}
+.info-box strong{color:var(--primary);}
+/* SEARCH */
+.search-results{position:absolute;top:100%;left:0;right:0;background:var(--card);border:1px solid var(--border);border-radius:0 0 8px 8px;box-shadow:var(--shadow-md);max-height:400px;overflow-y:auto;z-index:200;display:none;}
+.search-results.show{display:block;}
+.search-result-item{padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;display:flex;align-items:center;gap:10px;}
+.search-result-item:hover{background:var(--primary-light);}
+.search-result-item .sr-num{font-family:'SF Mono',monospace;font-weight:700;color:var(--primary);min-width:60px;}
+.search-result-item .sr-name{font-size:13px;}
+.search-result-item .sr-type{font-size:11px;color:var(--text-secondary);}
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--primary) 0%,#4f46e5 100%);color:#fff;border-radius:var(--radius);padding:32px;margin-bottom:24px;}
+.hero h2{font-size:26px;font-weight:800;margin-bottom:8px;}
+.hero p{font-size:15px;opacity:.9;line-height:1.5;}
+.hero .btn{margin-top:16px;background:#fff;color:var(--primary);}
+.hero .btn:hover{background:#f0f0f0;}
+/* QUICK ACTIONS */
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}
+.quick-action{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);cursor:pointer;transition:all .15s;border:2px solid transparent;}
+.quick-action:hover{border-color:var(--primary);box-shadow:var(--shadow-md);}
+.quick-action .qa-icon{font-size:24px;width:40px;text-align:center;}
+.quick-action .qa-text h4{font-size:14px;font-weight:600;}
+.quick-action .qa-text p{font-size:12px;color:var(--text-secondary);}
+/* VIEWS */
+.view{display:none;animation:fadeIn .3s ease;}
+.view.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.section-title{font-size:22px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.section-desc{color:var(--text-secondary);font-size:14px;margin-bottom:20px;line-height:1.6;}
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap;}
+.tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--border);background:transparent;color:var(--text-secondary);transition:all .15s;}
+.tab-btn.active{background:var(--tab-active-bg);border-color:var(--primary);color:var(--primary);}
+.tab-content{display:none;}
+.tab-content.active{display:block;animation:fadeIn .2s ease;}
+/* THEME TOGGLE */
+.theme-toggle{background:none;border:2px solid var(--border);border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:all .2s;color:var(--text);}
+.theme-toggle:hover{border-color:var(--primary);background:var(--primary-light);}
+/* PROFILE BUTTON */
+.profile-btn{background:none;border:2px solid var(--border);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;color:var(--text);transition:all .15s;}
+.profile-btn:hover{border-color:var(--primary);color:var(--primary);}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:var(--modal-overlay);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.modal-overlay.show{opacity:1;pointer-events:all;}
+.modal{background:var(--card);border-radius:16px;padding:32px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto;transform:scale(.9);transition:transform .3s;}
+.modal-overlay.show .modal{transform:scale(1);}
+.modal h2{font-size:24px;font-weight:800;margin-bottom:8px;}
+.modal p{color:var(--text-secondary);margin-bottom:20px;}
+/* FLOATING BTN */
+#scroll-top{position:fixed;bottom:24px;right:24px;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:var(--shadow-md);opacity:0;pointer-events:none;transition:all .3s;z-index:90;}
+#scroll-top.show{opacity:1;pointer-events:all;}
+#scroll-top:hover{transform:translateY(-2px);background:var(--primary-dark);}
+/* INVOICE */
+.invoice-preview{background:var(--invoice-bg);border:2px solid var(--border);border-radius:var(--radius);padding:24px;max-width:700px;}
+.invoice-header{display:flex;justify-content:space-between;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid var(--border);}
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-header{font-size:11px;font-weight:700;text-align:center;padding:8px 4px;color:var(--text-secondary);}
+.cal-day{padding:8px 4px;text-align:center;font-size:12px;border-radius:6px;transition:background .15s;}
+.cal-day:hover{background:var(--primary-light);}
+.cal-day.has-event{background:var(--danger-light);font-weight:700;color:var(--danger);cursor:pointer;}
+.cal-day.has-event:hover{background:var(--danger);color:#fff;}
+.cal-day.today{border:2px solid var(--primary);font-weight:700;}
+/* PRINT */
+@media print{
+    #sidebar,#topbar,.btn,.wizard-actions,.no-print,#scroll-top{display:none !important;}
+    #main{margin-left:0;}
+    .card{box-shadow:none;border:1px solid #ccc;}
+    .view{display:block !important;}
+    .tab-content{display:block !important;margin-bottom:16px;}
+    .op-card-body{display:block !important;}
+}
+/* RESPONSIVE */
+@media(max-width:768px){
+    #sidebar{transform:translateX(-100%);}
+    #sidebar.open{transform:translateX(0);}
+    #main{margin-left:0;}
+    #hamburger{display:block;}
+    .hero h2{font-size:20px;}
+    .grid{grid-template-columns:1fr;}
+    .grid-2{grid-template-columns:1fr;}
+    .grid-3{grid-template-columns:1fr 1fr;}
+    .quick-actions{grid-template-columns:1fr;}
+    .tabs{gap:2px;}
+    .tab-btn{padding:6px 10px;font-size:12px;}
+}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8;}
+[data-theme="dark"] ::-webkit-scrollbar-thumb{background:#475569;}
+.footer{text-align:center;padding:24px;color:var(--text-secondary);font-size:12px;border-top:1px solid var(--border);margin-top:32px;}
+</style>
+</head>
+<body>
+<!-- SIDEBAR -->
+<nav id="sidebar">
+    <div class="sidebar-header">
+        <h1>📊 Guía PGC Pro</h1>
+        <p>Plan General de Contabilidad v2.0</p>
+    </div>
+    <div class="sidebar-nav">
+        <div class="nav-section">Principal</div>
+        <div class="nav-item active" data-view="home"><span class="icon">🏠</span> Inicio</div>
+        <div class="nav-item" data-view="catalog"><span class="icon">📚</span> Catálogo Cuentas</div>
+        <div class="nav-section">Herramientas</div>
+        <div class="nav-item" data-view="wizard"><span class="icon">🧮</span> Asistente de Asientos</div>
+        <div class="nav-item" data-view="operations"><span class="icon">📋</span> Operaciones Comunes</div>
+        <div class="nav-item" data-view="invoices"><span class="icon">🧾</span> Simulador Facturas</div>
+        <div class="nav-item" data-view="taxes"><span class="icon">🏛️</span> Simulador Impuestos</div>
+        <div class="nav-section">Calculadoras</div>
+        <div class="nav-item" data-view="calculators"><span class="icon">🔢</span> Calculadora Universal</div>
+        <div class="nav-section">Guías</div>
+        <div class="nav-item" data-view="rules"><span class="icon">📏</span> Reglas Debe / Haber</div>
+        <div class="nav-item" data-view="iva"><span class="icon">💶</span> Guía de IVA</div>
+        <div class="nav-item" data-view="autonomo"><span class="icon">🏪</span> Guía del Autónomo</div>
+        <div class="nav-item" data-view="normativo"><span class="icon">⚖️</span> Marco Normativo</div>
+        <div class="nav-section">Referencia</div>
+        <div class="nav-item" data-view="errors"><span class="icon">⚠️</span> Errores Comunes</div>
+        <div class="nav-item" data-view="calendar"><span class="icon">📅</span> Calendario Fiscal</div>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div id="main">
+    <!-- TOPBAR -->
+    <div id="topbar">
+        <button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <div id="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Buscar cuenta (ej: 6000, Proveedores, IVA...)" autocomplete="off">
+            <div class="search-results" id="search-results"></div>
+        </div>
+        <button class="profile-btn" onclick="showProfileModal()" title="Cambiar perfil"><span id="profile-icon">🎓</span> <span id="profile-label">Estudiante</span></button>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="theme-btn">🌙</button>
+    </div>
+
+    <div id="content">
+<!-- ========== HOME ========== -->
+<div class="view active" id="view-home">
+    <div class="hero fade-in">
+        <h2>Guía del Plan General de Contabilidad</h2>
+        <p>Herramienta interactiva profesional para contables, asesores y autónomos. Busca cuentas, genera asientos, calcula impuestos y evita errores. Basado en el PGC (RD 1514/2007).</p>
+        <button class="btn btn-lg" onclick="navigateTo('wizard')">🧮 Empezar Asistente</button>
+    </div>
+    <h3 class="section-title">Accesos rápidos</h3>
+    <div class="quick-actions">
+        <div class="quick-action" onclick="navigateTo('wizard')"><span class="qa-icon">🧮</span><div class="qa-text"><h4>Crear asiento</h4><p>Asistente paso a paso</p></div></div>
+        <div class="quick-action" onclick="navigateTo('catalog')"><span class="qa-icon">📚</span><div class="qa-text"><h4>Buscar cuenta</h4><p>Explora el catálogo PGC</p></div></div>
+        <div class="quick-action" onclick="navigateTo('operations')"><span class="qa-icon">📋</span><div class="qa-text"><h4>Operaciones comunes</h4><p>40+ plantillas de asientos</p></div></div>
+        <div class="quick-action" onclick="navigateTo('invoices')"><span class="qa-icon">🧾</span><div class="qa-text"><h4>Simulador facturas</h4><p>Crea y previene facturas</p></div></div>
+        <div class="quick-action" onclick="navigateTo('taxes')"><span class="qa-icon">🏛️</span><div class="qa-text"><h4>Simulador impuestos</h4><p>Modelo 303, 111, 190, IS</p></div></div>
+        <div class="quick-action" onclick="navigateTo('calculators')"><span class="qa-icon">🔢</span><div class="qa-text"><h4>Calculadoras</h4><p>IVA, amortización, nómina...</p></div></div>
+        <div class="quick-action" onclick="navigateTo('rules')"><span class="qa-icon">📏</span><div class="qa-text"><h4>Reglas Debe/Haber</h4><p>Referencia rápida</p></div></div>
+        <div class="quick-action" onclick="navigateTo('iva')"><span class="qa-icon">💶</span><div class="qa-text"><h4>Guía de IVA</h4><p>Tipos, cuentas, liquidación</p></div></div>
+        <div class="quick-action" onclick="navigateTo('autonomo')"><span class="qa-icon">🏪</span><div class="qa-text"><h4>Guía del Autónomo</h4><p>Obligaciones y gastos</p></div></div>
+        <div class="quick-action" onclick="navigateTo('errors')"><span class="qa-icon">⚠️</span><div class="qa-text"><h4>Errores comunes</h4><p>Evita los fallos más frecuentes</p></div></div>
+        <div class="quick-action" onclick="navigateTo('calendar')"><span class="qa-icon">📅</span><div class="qa-text"><h4>Calendario fiscal</h4><p>Plazos y obligaciones</p></div></div>
+        <div class="quick-action" onclick="navigateTo('normativo')"><span class="qa-icon">⚖️</span><div class="qa-text"><h4>Marco normativo</h4><p>Leyes y regulaciones</p></div></div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+        <div class="card-header"><h2>📊 Resumen del PGC</h2></div>
+        <table>
+            <thead><tr><th>Grupo</th><th>Nombre</th><th>Tipo</th><th>Normal</th></tr></thead>
+            <tbody>
+                <tr><td><strong>1</strong></td><td>Financiación básica</td><td><span class="tag tag-liability">Pasivo / Neto</span></td><td>Haber</td></tr>
+                <tr><td><strong>2</strong></td><td>Activo no corriente</td><td><span class="tag tag-asset">Activo</span></td><td>Debe</td></tr>
+                <tr><td><strong>3</strong></td><td>Existencias</td><td><span class="tag tag-asset">Activo</span></td><td>Debe</td></tr>
+                <tr><td><strong>4</strong></td><td>Acreedores y deudas a corto plazo</td><td><span class="tag tag-liability">Pasivo</span></td><td>Haber</td></tr>
+                <tr><td><strong>5</strong></td><td>Cuentas de socios y administración</td><td><span class="tag tag-equity">Mixto</span></td><td>Variable</td></tr>
+                <tr><td><strong>6</strong></td><td>Gastos</td><td><span class="tag tag-expense">Gasto</span></td><td>Debe</td></tr>
+                <tr><td><strong>7</strong></td><td>Ingresos</td><td><span class="tag tag-income">Ingreso</span></td><td>Haber</td></tr>
+                <tr><td><strong>8</strong></td><td>Gastos e ingresos de ejercicios anteriores</td><td><span class="tag tag-expense">Resultado</span></td><td>Variable</td></tr>
+                <tr><td><strong>9</strong></td><td>Resultado del ejercicio</td><td><span class="tag tag-income">Resultado</span></td><td>Variable</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ========== CATALOG ========== -->
+<div class="view" id="view-catalog">
+    <h2 class="section-title">📚 Catálogo de Cuentas del PGC</h2>
+    <p class="section-desc">Explora la estructura completa del Plan General de Contabilidad. Haz clic en un grupo para ver sus subgrupos y cuentas.</p>
+    <div class="card"><ul class="account-tree" id="account-tree"></ul></div>
+    <div id="account-detail" style="display:none;"></div>
+</div>
+
+<!-- ========== WIZARD ========== -->
+<div class="view" id="view-wizard">
+    <h2 class="section-title">🧮 Asistente de Asientos Contables</h2>
+    <p class="section-desc">Sigue los pasos para generar el asiento correcto.</p>
+    <div class="wizard-container" id="wizard-container"></div>
+</div>
+
+<!-- ========== OPERATIONS ========== -->
+<div class="view" id="view-operations">
+    <h2 class="section-title">📋 Operaciones Comunes</h2>
+    <p class="section-desc">Plantillas de asientos para las operaciones más frecuentes. Haz clic para ver el detalle.</p>
+    <div style="margin-bottom:16px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm op-filter active" data-cat="all">Todas</button>
+        <button class="btn btn-outline btn-sm op-filter" data-cat="compra">Compras</button>
+        <button class="btn btn-outline btn-sm op-filter" data-cat="venta">Ventas</button>
+        <button class="btn btn-outline btn-sm op-filter" data-cat="nomina">Nómina</button>
+        <button class="btn btn-outline btn-sm op-filter" data-cat="financiero">Financiero</button>
+        <button class="btn btn-outline btn-sm op-filter" data-cat="impuesto">Impuestos</button>
+        <button class="btn btn-outline btn-sm op-filter" data-cat="societario">Societario</button>
+        <button class="btn btn-outline btn-sm op-filter" data-cat="otro">Otros</button>
+    </div>
+    <div class="grid" id="operations-grid"></div>
+</div>
+
+<!-- ========== INVOICES (Simulador de Facturas) ========== -->
+<div class="view" id="view-invoices">
+    <h2 class="section-title">🧾 Simulador de Facturas</h2>
+    <p class="section-desc">Crea una factura completa con auto-cálculo. Previsualiza el resultado y genera el asiento contable.</p>
+    <div class="grid-2">
+        <div class="card">
+            <h3 style="margin-bottom:16px;">📝 Datos de la Factura</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div class="form-group"><label>Número</label><input type="text" id="fac-num" value="FAC-0001" oninput="updateInvoice()"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="fac-fecha" oninput="updateInvoice()"></div>
+            </div>
+            <div class="form-group"><label>Emisor (Nombre)</label><input type="text" id="fac-emisor" placeholder="Mi Empresa S.L." oninput="updateInvoice()"></div>
+            <div class="form-group"><label>Receptor (Nombre)</label><input type="text" id="fac-receptor" placeholder="Cliente S.A." oninput="updateInvoice()"></div>
+            <hr style="margin:16px 0;border-color:var(--border);">
+            <h4 style="margin-bottom:12px;">Líneas de la factura</h4>
+            <div id="fac-lines"></div>
+            <button class="btn btn-outline btn-sm" onclick="addInvoiceLine()" style="margin-top:8px;">+ Añadir línea</button>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+                <div class="form-group"><label>Retención IRPF (%)</label>
+                    <select id="fac-retencion" onchange="updateInvoice()">
+                        <option value="0">0% (sin retención)</option>
+                        <option value="1">1% (agricultura)</option>
+                        <option value="2">2% (agricultura reducido)</option>
+                        <option value="15">15%</option>
+                        <option value="19" selected>19%</option>
+                        <option value="21">21%</option>
+                        <option value="24">24%</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Tipo de factura</label>
+                    <select id="fac-tipo" onchange="updateInvoice()">
+                        <option value="completa">Completa (con IVA)</option>
+                        <option value="simplificada">Simplificada</option>
+                    </select>
+                </div>
+            </div>
+            <div class="wizard-actions no-print">
+                <button class="btn btn-primary" onclick="updateInvoice();window.print()">🖨️ Imprimir / Exportar</button>
+                <button class="btn btn-outline" onclick="generateInvoiceEntry()">📋 Ver asiento</button>
+            </div>
+        </div>
+        <div>
+            <div class="card" id="invoice-preview-card">
+                <h3 style="margin-bottom:16px;">👁️ Vista previa</h3>
+                <div id="invoice-preview" class="invoice-preview"></div>
+            </div>
+            <div class="card" id="invoice-entry-card" style="display:none;">
+                <h3 style="margin-bottom:12px;">📋 Asiento contable</h3>
+                <div id="invoice-entry"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SIMULADOR IMPUESTOS ========== -->
+<div class="view" id="view-taxes">
+    <h2 class="section-title">🏛️ Simulador de Impuestos</h2>
+    <p class="section-desc">Calcula la liquidación de impuestos trimestrales y anuales.</p>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tax','m303',this)">Modelo 303 (IVA)</button>
+        <button class="tab-btn" onclick="switchTab('tax','m111',this)">Modelo 111 (IRPF)</button>
+        <button class="tab-btn" onclick="switchTab('tax','m190',this)">Modelo 190</button>
+        <button class="tab-btn" onclick="switchTab('tax','is',this)">Imp. Sociedades</button>
+        <button class="tab-btn" onclick="switchTab('tax','irpf-auto',this)">IRPF Autónomos</button>
+    </div>
+    <!-- Modelo 303 -->
+    <div class="tab-content active" id="tax-m303">
+        <div class="card">
+            <h3 style="margin-bottom:16px;">💶 Modelo 303 — Liquidación trimestral de IVA</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Introduce las bases e IVA repercutido y soportado del trimestre.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div>
+                    <h4 style="color:var(--danger);margin-bottom:12px;">IVA Repercutido (a ingresar)</h4>
+                    <div class="form-group"><label>Base imponible ventas</label><input type="number" id="tax-303-base-v" placeholder="0" oninput="calcModelo303()"></div>
+                    <div class="form-group"><label>Tipo IVA (%)</label><select id="tax-303-tipo-v" onchange="calcModelo303()"><option value="21">21%</option><option value="10">10%</option><option value="4">4%</option></select></div>
+                    <div style="padding:10px;background:var(--danger-light);border-radius:8px;text-align:center;">IVA repercutido: <strong id="tax-303-iva-v" style="color:var(--danger);">0,00 €</strong></div>
+                </div>
+                <div>
+                    <h4 style="color:var(--success);margin-bottom:12px;">IVA Soportado (a deducir)</h4>
+                    <div class="form-group"><label>Base imponible compras</label><input type="number" id="tax-303-base-c" placeholder="0" oninput="calcModelo303()"></div>
+                    <div class="form-group"><label>Tipo IVA (%)</label><select id="tax-303-tipo-c" onchange="calcModelo303()"><option value="21">21%</option><option value="10">10%</option><option value="4">4%</option></select></div>
+                    <div style="padding:10px;background:var(--success-light);border-radius:8px;text-align:center;">IVA soportado: <strong id="tax-303-iva-c" style="color:var(--success);">0,00 €</strong></div>
+                </div>
+            </div>
+            <div style="margin-top:20px;padding:16px;background:var(--primary-light);border-radius:8px;text-align:center;font-size:18px;">
+                <span id="tax-303-label">Cuota a ingresar:</span> <strong id="tax-303-resultado" style="color:var(--primary);">0,00 €</strong>
+            </div>
+            <div class="info-box" style="margin-top:12px;"><strong>📝 Cuentas:</strong> Debe 4770 (cancelar repercutido) / Haber 4720 (cancelar soportado) + Haber 5720 (bancos si ingresas)</div>
+        </div>
+    </div>
+    <!-- Modelo 111 -->
+    <div class="tab-content" id="tax-m111">
+        <div class="card">
+            <h3 style="margin-bottom:16px;">🏛️ Modelo 111 — Retenciones IRPF trimestral</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Totaliza las retenciones practicadas a trabajadores y profesionales.</p>
+            <div class="form-group"><label>Retenciones a trabajadores (€)</label><input type="number" id="tax-111-trab" placeholder="0" oninput="calcModelo111()"></div>
+            <div class="form-group"><label>Retenciones a profesionales (€)</label><input type="number" id="tax-111-prof" placeholder="0" oninput="calcModelo111()"></div>
+            <div class="form-group"><label>Otras retenciones (€)</label><input type="number" id="tax-111-otros" placeholder="0" oninput="calcModelo111()"></div>
+            <div style="margin-top:16px;padding:16px;background:var(--primary-light);border-radius:8px;text-align:center;font-size:18px;">
+                Total a ingresar: <strong id="tax-111-resultado" style="color:var(--primary);">0,00 €</strong>
+            </div>
+            <div class="info-box" style="margin-top:12px;"><strong>📝 Cuentas:</strong> Debe 4751 (retenciones) / Haber 5720 (bancos)</div>
+        </div>
+    </div>
+    <!-- Modelo 190 -->
+    <div class="tab-content" id="tax-m190">
+        <div class="card">
+            <h3 style="margin-bottom:16px;">📋 Modelo 190 — Declaración informativa de retenciones</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Resumen anual de retenciones. Es informativo, no se paga nada.</p>
+            <div class="form-group"><label>NIF del perceptor</label><input type="text" id="tax-190-nif" placeholder="12345678A"></div>
+            <div class="form-group"><label>Nombre / Razón social</label><input type="text" id="tax-190-nombre" placeholder="Profesional S.L."></div>
+            <div class="form-group"><label>Concepto</label><select id="tax-190-concepto">
+                <option value="R">Rendimientos del trabajo</option>
+                <option value="O">Rendimientos de capital inmobiliario</option>
+                <option value="A">Rendimientos de actividades profesionales</option>
+                <option value="G">Rendimientos de actividades económicas</option>
+            </select></div>
+            <div class="form-group"><label>Base de retenciones (€)</label><input type="number" id="tax-190-base" placeholder="0"></div>
+            <div class="form-group"><label>Retención practicada (€)</label><input type="number" id="tax-190-ret" placeholder="0"></div>
+            <div class="info-box" style="margin-top:12px;"><strong>ℹ️ Nota:</strong> El Modelo 190 es una declaración informativa. Se presenta anualmente (enero-fbrero) y no implica pago.</div>
+        </div>
+    </div>
+    <!-- Impuesto Sociedades -->
+    <div class="tab-content" id="tax-is">
+        <div class="card">
+            <h3 style="margin-bottom:16px;">🏢 Impuesto sobre Sociedades (simplificado)</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Calcula la cuota íntegra del Impuesto sobre Sociedades.</p>
+            <div class="form-group"><label>Base imponible (€)</label><input type="number" id="tax-is-base" placeholder="0" oninput="calcIS()"></div>
+            <div class="form-group"><label>Tipo impositivo (%)</label><select id="tax-is-tipo" onchange="calcIS()"><option value="25">25% General</option><option value="23">23% Pequeñas empresas (&lt;1M€)</option><option value="24">24% Cooperativas</option><option value="15">15% Empresas de nueva creación</option><option value="1">1% Entidades sin fines lucrativos</option></select></div>
+            <div class="form-group"><label>Cuotas deducibles (€)</label><input type="number" id="tax-is-deducciones" placeholder="0" oninput="calcIS()"></div>
+            <div style="margin-top:16px;padding:16px;background:var(--primary-light);border-radius:8px;text-align:center;font-size:18px;">
+                Cuota íntegra: <strong id="tax-is-resultado" style="color:var(--primary);">0,00 €</strong>
+            </div>
+        </div>
+    </div>
+    <!-- IRPF Autónomos -->
+    <div class="tab-content" id="tax-irpf-auto">
+        <div class="card">
+            <h3 style="margin-bottom:16px;">👤 IRPF Autónomos — Pago fraccionado trimestral</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Estimación del pago trimestral del IRPF para autónomos en estimación directa.</p>
+            <div class="form-group"><label>Ingresos del trimestre (€)</label><input type="number" id="tax-irpf-ing" placeholder="0" oninput="calcIRPFAuto()"></div>
+            <div class="form-group"><label>Gastos deducibles del trimestre (€)</label><input type="number" id="tax-irpf-gas" placeholder="0" oninput="calcIRPFAuto()"></div>
+            <div class="form-group"><label>Cuota autónomos pagada (€)</label><input type="number" id="tax-irpf-auto-cuota" placeholder="0" oninput="calcIRPFAuto()"></div>
+            <div class="form-group"><label>Método de cálculo</label><select id="tax-irpf-metodo" onchange="calcIRPFAuto()">
+                <option value="normal">Normal (sobre beneficio)</option>
+                <option value="reducido">7% reducido (primeros 2 años)</option>
+            </select></div>
+            <div style="margin-top:16px;padding:16px;background:var(--primary-light);border-radius:8px;">
+                <div style="text-align:center;font-size:16px;margin-bottom:8px;">Base imponible: <strong id="tax-irpf-base"></strong></div>
+                <div style="text-align:center;font-size:18px;">Pago fraccionado: <strong id="tax-irpf-resultado" style="color:var(--primary);">0,00 €</strong></div>
+            </div>
+            <div class="info-box" style="margin-top:12px;"><strong>📝 Cuentas:</strong> Debe 4751 (pago fraccionado) / Haber 5720 (bancos). Modelo 130.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== CALCULADORAS UNIVERSALES ========== -->
+<div class="view" id="view-calculators">
+    <h2 class="section-title">🔢 Calculadora Universal</h2>
+    <p class="section-desc">Herramientas de cálculo para contabilidad, fiscalidad y gestión de empresa.</p>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('calc','calc-iva',this)">IVA</button>
+        <button class="tab-btn" onclick="switchTab('calc','calc-amort',this)">Amortización</button>
+        <button class="tab-btn" onclick="switchTab('calc','calc-irpf',this)">IRPF</button>
+        <button class="tab-btn" onclick="switchTab('calc','calc-nomina',this)">Nómina</button>
+        <button class="tab-btn" onclick="switchTab('calc','calc-costelab',this)">Coste Laboral</button>
+        <button class="tab-btn" onclick="switchTab('calc','calc-bep',this)">Break-even</button>
+        <button class="tab-btn" onclick="switchTab('calc','calc-marg',this)">Márgenes</button>
+    </div>
+    <!-- IVA Calculator -->
+    <div class="tab-content active" id="calc-calc-iva">
+        <div class="card">
+            <h3>💶 Calculadora de IVA</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px;">
+                <div class="form-group"><label>Base imponible (€)</label><input type="number" id="calc-iva-base" placeholder="1000" oninput="calcIVA()"></div>
+                <div class="form-group"><label>Tipo de IVA (%)</label><select id="calc-iva-tipo" onchange="calcIVA()"><option value="21">21% General</option><option value="10">10% Reducido</option><option value="4">4% Superreducido</option><option value="0">0% Exento</option></select></div>
+                <div class="form-group"><label>Resultado</label><div style="padding:10px;background:var(--bg);border-radius:8px;font-size:14px;">
+                    <div>IVA: <strong id="calc-iva-monto">0,00 €</strong></div>
+                    <div>Total: <strong id="calc-iva-total">0,00 €</strong></div>
+                </div></div>
+            </div>
+            <div class="form-group" style="margin-top:8px;"><label>Incluir retención IRPF (%)</label><select id="calc-iva-ret" onchange="calcIVA()"><option value="0">No</option><option value="1">1%</option><option value="2">2%</option><option value="15">15%</option><option value="19">19%</option><option value="21">21%</option><option value="24">24%</option></select></div>
+            <div id="calc-iva-ret-row" style="display:none;padding:10px;background:var(--warning-light);border-radius:8px;font-size:14px;margin-top:8px;">
+                Retención: <strong id="calc-iva-ret-monto">0,00 €</strong> | Total a pagar/cobrar: <strong id="calc-iva-ret-total">0,00 €</strong>
+            </div>
+        </div>
+    </div>
+    <!-- Amortización -->
+    <div class="tab-content" id="calc-calc-amort">
+        <div class="card">
+            <h3>📉 Calculadora de Amortización</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+                <div class="form-group"><label>Valor adquisición (€)</label><input type="number" id="calc-amort-valor" placeholder="10000" oninput="calcAmort()"></div>
+                <div class="form-group"><label>Vida útil (años)</label><input type="number" id="calc-amort-vida" value="5" oninput="calcAmort()"></div>
+                <div class="form-group"><label>Método</label><select id="calc-amort-metodo" onchange="calcAmort()"><option value="lineal">Lineal</option><option value="degresiva">Degresiva</option><option value="unidades">Unidades de obra</option></select></div>
+                <div class="form-group" id="calc-amort-unidades-group" style="display:none;"><label>Unidades totales</label><input type="number" id="calc-amort-unidades" placeholder="100000" oninput="calcAmort()"></div>
+                <div class="form-group" id="calc-amort-unidades-used-group" style="display:none;"><label>Unidades este ejercicio</label><input type="number" id="calc-amort-unidades-usadas" placeholder="20000" oninput="calcAmort()"></div>
+                <div class="form-group"><label>Valor residual (€)</label><input type="number" id="calc-amort-residual" value="0" oninput="calcAmort()"></div>
+            </div>
+            <div style="margin-top:16px;padding:16px;background:var(--primary-light);border-radius:8px;">
+                <div style="font-size:18px;text-align:center;">Cuota anual: <strong id="calc-amort-cuota" style="color:var(--primary);">0,00 €</strong></div>
+                <div style="font-size:14px;text-align:center;margin-top:4px;">Porcentaje: <strong id="calc-amort-pct">20,00%</strong></div>
+            </div>
+            <div id="calc-amort-timeline" style="margin-top:16px;"></div>
+        </div>
+    </div>
+    <!-- IRPF -->
+    <div class="tab-content" id="calc-calc-irpf">
+        <div class="card">
+            <h3>🏛️ Calculadora de IRPF</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Calcula retenciones para profesionales o pago trimestral para autónomos.</p>
+            <div class="form-group"><label>Tipo de cálculo</label><select id="calc-irpf-tipo" onchange="calcIRPF()"><option value="retencion">Retención a profesionales</option><option value="trimestral">Pago trimestral autónomos</option></select></div>
+            <div id="calc-irpf-retencion-section">
+                <div class="form-group"><label>Base imponible (€)</label><input type="number" id="calc-irpf-base-ret" placeholder="1000" oninput="calcIRPF()"></div>
+                <div class="form-group"><label>Tipo retención (%)</label><select id="calc-irpf-pct" onchange="calcIRPF()"><option value="19">19% (1er año)</option><option value="21" selected>21% (2º-3er año)</option><option value="24">24% (desde 3er año)</option></select></div>
+            </div>
+            <div id="calc-irpf-trimestral-section" style="display:none;">
+                <div class="form-group"><label>Ingresos trimestrales (€)</label><input type="number" id="calc-irpf-ing-q" placeholder="10000" oninput="calcIRPF()"></div>
+                <div class="form-group"><label>Gastos deducibles (€)</label><input type="number" id="calc-irpf-gas-q" placeholder="3000" oninput="calcIRPF()"></div>
+                <div class="form-group"><label>Cuota autónomos pagada (€)</label><input type="number" id="calc-irpf-auto-q" placeholder="0" oninput="calcIRPF()"></div>
+                <div class="form-group"><label>Método</label><select id="calc-irpf-method-q" onchange="calcIRPF()"><option value="normal">Normal (sobre beneficio)</option><option value="reducido">7% reducido</option></select></div>
+            </div>
+            <div style="margin-top:16px;padding:16px;background:var(--primary-light);border-radius:8px;text-align:center;font-size:18px;">
+                Resultado: <strong id="calc-irpf-resultado" style="color:var(--primary);">0,00 €</strong>
+            </div>
+        </div>
+    </div>
+    <!-- Nómina -->
+    <div class="tab-content" id="calc-calc-nomina">
+        <div class="card">
+            <h3>👥 Calculadora de Nómina</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+                <div class="form-group"><label>Salario bruto anual (€)</label><input type="number" id="calc-nom-bruto" placeholder="24000" oninput="calcNomina()"></div>
+                <div class="form-group"><label>Periodicidad</label><select id="calc-nom-periodo" onchange="calcNomina()"><option value="12">12 pagas</option><option value="14">14 pagas</option></select></div>
+            </div>
+            <div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:8px;">
+                <h4 style="margin-bottom:8px;">Resultado mensual (estimado):</h4>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;">
+                    <div>Bruto mensual: <strong id="calc-nom-bruto-m">0,00 €</strong></div>
+                    <div>IRPF estimado: <strong id="calc-nom-irpf" style="color:var(--danger);">0,00 €</strong></div>
+                    <div>SS trabajador: <strong id="calc-nom-ss" style="color:var(--danger);">0,00 €</strong></div>
+                    <div style="font-size:16px;">Neto mensual: <strong id="calc-nom-neto" style="color:var(--success);">0,00 €</strong></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Coste Laboral -->
+    <div class="tab-content" id="calc-calc-costelab">
+        <div class="card">
+            <h3>💼 Calculadora de Coste Laboral</h3>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Coste total real de un trabajador para la empresa.</p>
+            <div class="form-group"><label>Salario bruto anual (€)</label><input type="number" id="calc-cl-bruto" placeholder="24000" oninput="calcCosteLab()"></div>
+            <div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:8px;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;">
+                    <div>Salario bruto: <strong id="calc-cl-bruto2">0,00 €</strong></div>
+                    <div>SS empresa (~23,6%): <strong id="calc-cl-ss" style="color:var(--danger);">0,00 €</strong></div>
+                    <div>Otros costes (~2%): <strong id="calc-cl-otros" style="color:var(--danger);">0,00 €</strong></div>
+                    <div style="font-size:18px;grid-column:span 2;text-align:center;padding-top:8px;border-top:2px solid var(--border);margin-top:8px;">
+                        Coste total empresa: <strong id="calc-cl-total" style="color:var(--primary);">0,00 €</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Break-even -->
+    <div class="tab-content" id="calc-calc-bep">
+        <div class="card">
+            <h3>📊 Calculadora Break-even (Punto Muerto)</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px;">
+                <div class="form-group"><label>Costes fijos (€)</label><input type="number" id="calc-bep-fijos" placeholder="5000" oninput="calcBEP()"></div>
+                <div class="form-group"><label>Precio unitario (€)</label><input type="number" id="calc-bep-precio" placeholder="50" oninput="calcBEP()"></div>
+                <div class="form-group"><label>Coste variable unitario (€)</label><input type="number" id="calc-bep-variable" placeholder="20" oninput="calcBEP()"></div>
+            </div>
+            <div style="margin-top:16px;padding:16px;background:var(--primary-light);border-radius:8px;">
+                <div style="text-align:center;font-size:18px;">Punto muerto: <strong id="calc-bep-unidades" style="color:var(--primary);">—</strong> unidades</div>
+                <div style="text-align:center;font-size:14px;margin-top:4px;">Ingresos necesarios: <strong id="calc-bep-ingresos">0,00 €</strong></div>
+                <div style="text-align:center;font-size:14px;">Margen de contribución: <strong id="calc-bep-margen">0,00 €</strong> por unidad</div>
+            </div>
+        </div>
+    </div>
+    <!-- Márgenes -->
+    <div class="tab-content" id="calc-calc-marg">
+        <div class="card">
+            <h3>📈 Calculadora de Márgenes</h3>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+                <div class="form-group"><label>Precio de venta (€)</label><input type="number" id="calc-marg-venta" placeholder="100" oninput="calcMargen()"></div>
+                <div class="form-group"><label>Coste de adquisición (€)</label><input type="number" id="calc-marg-coste" placeholder="60" oninput="calcMargen()"></div>
+            </div>
+            <div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:8px;">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;">
+                    <div><div style="font-size:12px;color:var(--text-secondary);">Margen Bruto</div><div style="font-size:20px;font-weight:800;color:var(--success);" id="calc-marg-bruto">0,00 €</div><div style="font-size:14px;color:var(--text-secondary);" id="calc-marg-bruto-pct">0%</div></div>
+                    <div><div style="font-size:12px;color:var(--text-secondary);">Markup</div><div style="font-size:20px;font-weight:800;color:var(--primary);" id="calc-marg-markup">0,00 €</div><div style="font-size:14px;color:var(--text-secondary);" id="calc-marg-markup-pct">0%</div></div>
+                    <div><div style="font-size:12px;color:var(--text-secondary);">Divisor de coste</div><div style="font-size:20px;font-weight:800;color:var(--warning);" id="calc-marg-divisor">0,00</div><div style="font-size:14px;color:var(--text-secondary);">coste / venta</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== REGLAS DEBE/HABER ========== -->
+<div class="view" id="view-rules">
+    <h2 class="section-title">📏 Reglas del Debe y Haber</h2>
+    <p class="section-desc">Fundamento de la partida doble: toda operación tiene un Debe y un Haber de igual importe.</p>
+    <div class="card">
+        <h3 style="margin-bottom:12px;">⚖️ Ecuación Contable</h3>
+        <div style="background:var(--primary-light);padding:16px;border-radius:8px;text-align:center;font-size:20px;font-weight:800;color:var(--primary);margin-bottom:16px;">ACTIVO = PASIVO + FONDOS PROPIOS</div>
+        <p style="font-size:14px;line-height:1.7;color:var(--text-secondary);">Cada transacción afecta a al menos <strong>dos cuentas</strong>. El importe total del <strong>Debe</strong> siempre debe ser igual al importe total del <strong>Haber</strong>.</p>
+    </div>
+    <div class="grid" style="margin-top:16px;">
+        <div class="rule-box debe">
+            <h4>🔴 CUÁNDO SE DEBITA (Debe)</h4>
+            <ul>
+                <li><strong>Activos</strong> (Grupos 2, 3): cuando <em>aumentan</em></li>
+                <li><strong>Gastos</strong> (Grupo 6): cuando se <em>incurren</em></li>
+                <li><strong>Pasivos</strong> (Grupos 1, 4): cuando <em>disminuyen</em></li>
+                <li><strong>Ingresos</strong> (Grupo 7): en <em>devoluciones</em></li>
+                <li><strong>Fondos propios</strong>: cuando <em>disminuyen</em></li>
+            </ul>
+        </div>
+        <div class="rule-box haber">
+            <h4>🟢 CUÁNDO SE ACREEDA (Haber)</h4>
+            <ul>
+                <li><strong>Activos</strong> (Grupos 2, 3): cuando <em>disminuyen</em></li>
+                <li><strong>Gastos</strong> (Grupo 6): en <em>regularizaciones</em></li>
+                <li><strong>Pasivos</strong> (Grupos 1, 4): cuando <em>aumentan</em></li>
+                <li><strong>Ingresos</strong> (Grupo 7): cuando se <em>devengan</em></li>
+                <li><strong>Fondos propios</strong>: cuando <em>aumentan</em></li>
+            </ul>
+        </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">📝 Ejemplo Práctico</h3>
+        <p style="font-size:14px;line-height:1.7;margin-bottom:12px;">Compras mercaderías por 1.000€ + 21% IVA a crédito:</p>
+        <table>
+            <thead><tr><th>Cuenta</th><th>Concepto</th><th>Debe</th><th>Haber</th></tr></thead>
+            <tbody>
+                <tr><td><strong>6000</strong></td><td>Compras de mercaderías</td><td class="amount amount-debe">1.000,00 €</td><td></td></tr>
+                <tr><td><strong>4720</strong></td><td>H.P. IVA Soportado</td><td class="amount amount-debe">210,00 €</td><td></td></tr>
+                <tr><td><strong>4000</strong></td><td>Proveedores</td><td></td><td class="amount amount-haber">1.210,00 €</td></tr>
+                <tr class="entry-total"><td colspan="2"><strong>TOTALES</strong></td><td class="amount amount-debe"><strong>1.210,00 €</strong></td><td class="amount amount-haber"><strong>1.210,00 €</strong></td></tr>
+            </tbody>
+        </table>
+        <div class="tip-box"><strong>💡 ¿Por qué?</strong> Compras (6000) es gasto → se debita. IVA Soportado (4720) es un derecho de cobro → activo → se debita. Proveedores (4000) es deuda → pasivo → se acreeda.</div>
+    </div>
+</div>
+
+<!-- ========== GUÍA IVA ========== -->
+<div class="view" id="view-iva">
+    <h2 class="section-title">💶 Guía de IVA</h2>
+    <p class="section-desc">Tipos impositivos vigentes y cómo contabilizar el IVA soportado y repercutido.</p>
+    <div class="grid" style="margin-bottom:20px;">
+        <div class="card" style="text-align:center;border-top:4px solid var(--danger);"><div style="font-size:36px;font-weight:900;color:var(--danger);">21%</div><div style="font-weight:700;margin:4px 0;">Tipo General</div><div style="font-size:12px;color:var(--text-secondary);">Bienes y servicios estándar</div></div>
+        <div class="card" style="text-align:center;border-top:4px solid var(--warning);"><div style="font-size:36px;font-weight:900;color:var(--warning);">10%</div><div style="font-weight:700;margin:4px 0;">Tipo Reducido</div><div style="font-size:12px;color:var(--text-secondary);">Alimentos, transporte, vivienda</div></div>
+        <div class="card" style="text-align:center;border-top:4px solid var(--success);"><div style="font-size:36px;font-weight:900;color:var(--success);">4%</div><div style="font-weight:700;margin:4px 0;">Superreducido</div><div style="font-size:12px;color:var(--text-secondary);">Pan, leche, libros, medicamentos</div></div>
+        <div class="card" style="text-align:center;border-top:4px solid var(--primary);"><div style="font-size:36px;font-weight:900;color:var(--primary);">0%</div><div style="font-weight:700;margin:4px 0;">Exento</div><div style="font-size:12px;color:var(--text-secondary);">Sanidad, educación, seguros</div></div>
+    </div>
+    <div class="card">
+        <h3 style="margin-bottom:12px;">📝 Cuentas de IVA</h3>
+        <table>
+            <thead><tr><th>Cuenta</th><th>Nombre</th><th>Uso</th></tr></thead>
+            <tbody>
+                <tr><td><strong>4720</strong></td><td>H.P. IVA Soportado</td><td>Cuando <strong>compras</strong> → IVA que pagas (deducible)</td></tr>
+                <tr><td><strong>4770</strong></td><td>H.P. IVA Repercutido</td><td>Cuando <strong>vendes</strong> → IVA que cobras (a ingresar)</td></tr>
+                <tr><td><strong>4751</strong></td><td>H.P. IVA soportado en inversiones</td><td>IVA en compra de inmovilizado</td></tr>
+                <tr><td><strong>4700</strong></td><td>H.P. IVA soportado no deducible</td><td>IVA en gastos no deducibles</td></tr>
+                <tr><td><strong>4710</strong></td><td>H.P. IVA retenido a proveedores</td><td>Retención de IVA a profesionales</td></tr>
+                <tr><td><strong>4730</strong></td><td>H.P. bases imponibles del IVA</td><td>Regularización IVA deducible</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">📋 Liquidación trimestral de IVA (Modelo 303)</h3>
+        <div style="background:var(--primary-light);padding:16px;border-radius:8px;font-size:15px;font-weight:600;text-align:center;color:var(--primary);">IVA Repercutido − IVA Soportado = Cuota a ingresar</div>
+        <div style="margin-top:12px;font-size:14px;line-height:1.7;color:var(--text-secondary);">
+            <strong>Cuentas en el modelo 303:</strong><br>
+            • Casilla 01-03: IVA repercutido (4770) → lo que has cobrado de IVA<br>
+            • Casilla 25-28: IVA soportado (4720) → lo que has pagado de IVA<br>
+            • Casilla 71: Diferencia (si es positiva, pagas; si es negativa, compensas)
+        </div>
+    </div>
+</div>
+
+<!-- ========== GUÍA DEL AUTÓNOMO ========== -->
+<div class="view" id="view-autonomo">
+    <h2 class="section-title">🏪 Guía del Autónomo</h2>
+    <p class="section-desc">Todo lo que necesitas saber como trabajador autónomo en España.</p>
+    <div class="grid">
+        <div class="card">
+            <h3 style="margin-bottom:12px;">👤 Tipos de autónomo</h3>
+            <div style="font-size:14px;line-height:1.8;">
+                <div style="margin-bottom:8px;"><strong>🔹 Régimen General (Estimación Directa Normal):</strong> Para autónomos con facturación > 600.000€. Se tributa sobre el beneficio neto.</div>
+                <div style="margin-bottom:8px;"><strong>🔹 Estimación Directa Simplificada:</strong> Para facturación < 600.000€. Simplificación en contabilidad. Modelo 130.</div>
+                <div style="margin-bottom:8px;"><strong>🔹 Módulos:</strong> Se tributa por módulos (cuotas fijas) según actividad y superficie. Modelo 131. Se está eliminando progresivamente.</div>
+                <div><strong>🔹 Tarifa plana:</strong> Cuota reducida (~80€/mes) los primeros 12 meses. Requiere no haber sido autónomo en los 2 años anteriores.</div>
+            </div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:12px;">📋 Obligaciones fiscales</h3>
+            <div style="font-size:14px;line-height:1.8;">
+                <div style="margin-bottom:6px;"><strong>📌 Modelo 130 (trimestral):</strong> Pago fraccionado del IRPF (estimación directa). 20% sobre beneficio neto.</div>
+                <div style="margin-bottom:6px;"><strong>📌 Modelo 131 (trimestral):</strong> Pago fraccionado por módulos.</div>
+                <div style="margin-bottom:6px;"><strong>📌 Modelo 303 (trimestral):</strong> Liquidación de IVA. IVA repercutido − soportado.</div>
+                <div style="margin-bottom:6px;"><strong>📌 Modelo 390 (anual):</strong> Resumen anual del IVA.</div>
+                <div style="margin-bottom:6px;"><strong>📌 Modelo 100 (anual):</strong> Declaración de la Renta.</div>
+                <div><strong>📌 Modelo 303 cierre (enero):</strong> Liquidación del IVA del 4º trimestre + anual.</div>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">✅ Gastos deducibles vs ❌ No deducibles</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div style="background:var(--success-light);padding:16px;border-radius:8px;">
+                <h4 style="color:var(--success);margin-bottom:8px;">✅ Deducibles (100%)</h4>
+                <ul style="font-size:13px;margin-left:18px;line-height:2;">
+                    <li>Seguridad social del autónomo</li>
+                    <li>Alquiler de local/ despacho</li>
+                    <li>Suministros (proporción 30% si es home office)</li>
+                    <li>Profesionales (abogados, asesores)</li>
+                    <li>Seguros profesionales</li>
+                    <li>Materias primas y mercaderías</li>
+                    <li>Amortización del inmovilizado</li>
+                    <li>Gastos de formación</li>
+                    <li>Gastos bancarios</li>
+                    <li>Manutención (máx. 48€/día si fuera de local)</li>
+                </ul>
+            </div>
+            <div style="background:var(--danger-light);padding:16px;border-radius:8px;">
+                <h4 style="color:var(--danger);margin-bottom:8px;">❌ No deducibles</h4>
+                <ul style="font-size:13px;margin-left:18px;line-height:2;">
+                    <li>Multas y sanciones</li>
+                    <li>Tributos que no sean el IBS</li>
+                    <li>Pérdidas en juegos de azar</li>
+                    <li>Gastos personales y familiares</li>
+                    <li>Vehículos de uso mixto (solo 50%)</li>
+                    <li>Gastos sin factura o justificante</li>
+                    <li>Primas de seguros de vida</li>
+                    <li>Donativos superiores al 10% de la base</li>
+                    <li>Gastos de aspecto personal</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">💶 Cuota de autónomos (2025)</h3>
+        <table>
+            <thead><tr><th>Régimen</th><th>Cuota mensual</th><th>Duración</th></tr></thead>
+            <tbody>
+                <tr><td>Tarifa plana nuevos</td><td><strong>~80 €/mes</strong></td><td>12 meses (ampliable 12 más)</td></tr>
+                <tr><td>Régimen general base mínima</td><td><strong>~310 €/mes</strong></td><td>Permanente</td></tr>
+                <tr><td>Régimen general base 2.000€</td><td><strong>~620 €/mes</strong></td><td>Permanente</td></tr>
+                <tr><td>Máxima (5.000€)</td><td><strong>~1.550 €/mes</strong></td><td>Permanente</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">📅 Plazos importantes</h3>
+        <div style="font-size:14px;line-height:1.8;">
+            <div>• <strong>Alta en Hacienda:</strong> Antes del inicio de la actividad (modelo 036/037)</div>
+            <div>• <strong>Alta en Seguridad Social:</strong> Dentro del mes anterior al inicio</div>
+            <div>• <strong>Modelo 303:</strong> Q1 (abr 1-20), Q2 (jul 1-20), Q3 (oct 1-20), Q4+anual (feb 1-20)</div>
+            <div>• <strong>Modelo 130/131:</strong> Mismos plazos que el 303</div>
+            <div>• <strong>IRPF (Renta):</strong> Mayo-junio del año siguiente</div>
+            <div>• <strong>Libro de registro de facturas:</strong> Obligatorio, actualización trimestral</div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== MARCO NORMATIVO ========== -->
+<div class="view" id="view-normativo">
+    <h2 class="section-title">⚖️ Marco Normativo Contable</h2>
+    <p class="section-desc">Referencia a las principales normas y leyes que regulan la contabilidad en España.</p>
+    <div class="grid">
+        <div class="card">
+            <h3 style="margin-bottom:8px;">📜 RD 1514/2007 — Plan General de Contabilidad</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">Aprueba el PGC para sociedades de capital. Establece las normas de valoración, el catálogo de cuentas y la estructura de las cuentas anuales (balance, PyG, estado de cambios en el patrimonio neto, estado de flujos de efectivo y memoria).</p>
+            <div class="info-box"><strong>Aplicación:</strong> Obligatoria para sociedades mercantiles, salvo las que apliquen el PGC-PYME.</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:8px;">📜 RD 1515/2007 — PGC-PYME</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">Plan General de Contabilidad de Pequeñas y Medianas Empresas. Versión simplificada con modelos abreviados de cuentas anuales.</p>
+            <div class="info-box"><strong>Requisito:</strong> Empresas que no superen los límites del art. 263 LSC (4M€ activo, 8M€ volumen de ventas, 50 empleados).</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:8px;">📜 Ley 27/2014 — Impuesto sobre Sociedades</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">Regula la base imponible, tipo impositivo (25% general), deducciones y obligaciones de declaración del Impuesto sobre Sociedades.</p>
+            <div class="info-box"><strong>Tipos:</strong> 25% general, 23% pymes (1er MM), 15% nuevas empresas, 1% entidades sin fines lucrativos.</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:8px;">📜 Ley 35/2006 — IRPF</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">Ley del Impuesto sobre la Renta de las Personas Físicas. Incluye las tablas de retenciones, rendimientos del trabajo, capital y actividades económicas.</p>
+            <div class="info-box"><strong>Retenciones profesionales:</strong> 19% (1er año), 21% (2º-3er año), 24% (desde 3er año).</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:8px;">📜 Ley 37/1992 — IVA</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">Ley del Impuesto sobre el Valor Añadido. Establece los tipos impositivos, operaciones exentas, deducibilidad y obligaciones de facturación y liquidación.</p>
+            <div class="info-box"><strong>Tipos:</strong> 21% general, 10% reducido, 4% superreducido, 0% exento.</div>
+        </div>
+        <div class="card">
+            <h3 style="margin-bottom:8px;">📜 Normas Forales</h3>
+            <p style="font-size:13px;color:var(--text-secondary);line-height:1.7;">País Vasco y Navarra tienen su propia normativa tributaria a través de los Conciertos Económicos.</p>
+            <div class="info-box"><strong>Importante:</strong> En País Vasco (3 Territorios Históricos) y Navarra, los tipos y normativa del IVA (HGIPU/OPF) e IRPF pueden diferir. Consultar la normativa foral específica.</div>
+        </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">📚 Otras normas relevantes</h3>
+        <table>
+            <thead><tr><th>Norma</th><th>Descripción</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Ley 14/2013</strong></td><td>Ley de apoyo a los emprendedores y su internacionalización</td></tr>
+                <tr><td><strong>RD 1619/2012</strong></td><td>Obligación de expedir facturas (formato y contenido mínimo)</td></tr>
+                <tr><td><strong>Ley 10/2010</strong></td><td>Prevención del blanqueo de capitales</td></tr>
+                <tr><td><strong>RD 624/2023</strong></td><td>Reglamento de revisión tributaria</td></tr>
+                <tr><td><strong>Ley 11/2020</strong></td><td>Impuesto sobre las transacciones financieras</td></tr>
+                <tr><td><strong>ICAC NC 1/2021</strong></td><td>Norma sobre cuentas anuales y memoria</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ========== ERRORES COMUNES ========== -->
+<div class="view" id="view-errors">
+    <h2 class="section-title">⚠️ Errores Comunes en Contabilidad</h2>
+    <p class="section-desc">Los fallos más frecuentes que cometen contables, asesores y autónomos.</p>
+    <div id="errors-list"></div>
+</div>
+
+<!-- ========== CALENDARIO FISCAL ========== -->
+<div class="view" id="view-calendar">
+    <h2 class="section-title">📅 Calendario Fiscal</h2>
+    <p class="section-desc">Plazos y obligaciones fiscales. Los colores indican días con vencimientos.</p>
+    <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="changeCalMonth(-1)">← Anterior</button>
+        <h3 id="cal-month-title" style="font-size:18px;"></h3>
+        <button class="btn btn-outline btn-sm" onclick="changeCalMonth(1)">Siguiente →</button>
+        <button class="btn btn-outline btn-sm" onclick="calToday()">Hoy</button>
+    </div>
+    <div class="grid-2">
+        <div class="card">
+            <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div class="card" id="cal-events">
+            <h3 style="margin-bottom:12px;">📋 Obligaciones este mes</h3>
+            <div id="cal-events-list"></div>
+        </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+        <h3 style="margin-bottom:12px;">📋 Obligaciones fiscales anuales</h3>
+        <table>
+            <thead><tr><th>Modelo</th><th>Descripción</th><th>Plazo</th></tr></thead>
+            <tbody>
+                <tr><td><strong>303</strong></td><td>Liquidación trimestral IVA</td><td>Q1(abr), Q2(jul), Q3(oct), Q4+anual(feb)</td></tr>
+                <tr><td><strong>390</strong></td><td>Resumen anual IVA</td><td>Enero-Febrero</td></tr>
+                <tr><td><strong>111</strong></td><td>Retenciones IRPF (trimestral)</td><td>Q1(abr), Q2(jul), Q3(oct), Q4(ene)</td></tr>
+                <tr><td><strong>115</strong></td><td>Retenciones arrendamientos (trimestral)</td><td>Q1(abr), Q2(jul), Q3(oct), Q4(ene)</td></tr>
+                <tr><td><strong>130/131</strong></td><td>Pago fraccionado IRPF autónomos</td><td>Q1(abr), Q2(jul), Q3(oct), Q4(ene)</td></tr>
+                <tr><td><strong>190</strong></td><td>Declaración informativa retenciones</td><td>Enero-Febrero</td></tr>
+                <tr><td><strong>100</strong></td><td>Declaración de la Renta</td><td>Mayo-Junio</td></tr>
+                <tr><td><strong>200/202</strong></td><td>Impuesto sobre Sociedades</td><td>25 días naturales tras cierre</td></tr>
+                <tr><td><strong>180</strong></td><td>Retenciones arrendamientos (anual)</td><td>Enero-Febrero</td></tr>
+                <tr><td><strong>192</strong></td><td>Determinados pagos (premios, etc.)</td><td>Enero-Febrero</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>📊 Guía PGC Pro v2.0 — Plan General de Contabilidad Interactivo</p>
+    <p style="margin-top:4px;">Basado en RD 1514/2007 · Última actualización: Julio 2026</p>
+    <p style="margin-top:4px;font-size:11px;">⚠️ Esta herramienta es orientativa. Consulta siempre con un profesional.</p>
+</div>
+    </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- THEME TOGGLE (already in topbar) -->
+
+<!-- PROFILE MODAL -->
+<div class="modal-overlay" id="profile-modal">
+    <div class="modal">
+        <h2>👋 ¡Bienvenido/a a Guía PGC Pro!</h2>
+        <p>¿Quién eres? Selecciona tu perfil para personalizar la experiencia.</p>
+        <div style="display:grid;gap:12px;">
+            <div class="option-card" onclick="selectProfile('estudiante')" style="text-align:left;display:flex;gap:12px;align-items:center;">
+                <span style="font-size:36px;">🎓</span>
+                <div><strong>Estudiante</strong><br><span style="font-size:12px;color:var(--text-secondary);">Vista simplificada, más explicaciones, modo estudio con ejemplos detallados.</span></div>
+            </div>
+            <div class="option-card" onclick="selectProfile('profesional')" style="text-align:left;display:flex;gap:12px;align-items:center;">
+                <span style="font-size:36px;">💼</span>
+                <div><strong>Profesional</strong><br><span style="font-size:12px;color:var(--text-secondary);">Funciones completas, operaciones avanzadas, detalle fiscal completo.</span></div>
+            </div>
+            <div class="option-card" onclick="selectProfile('autonomo')" style="text-align:left;display:flex;gap:12px;align-items:center;">
+                <span style="font-size:36px;">🏪</span>
+                <div><strong>Autónomo</strong><br><span style="font-size:12px;color:var(--text-secondary);">Enfocado en operaciones comunes del autónomo: facturas, IVA, IRPF.</span></div>
+            </div>
+        </div>
+        <div style="margin-top:16px;text-align:center;">
+            <button class="btn btn-outline btn-sm" onclick="skipProfile()">Omitir por ahora</button>
+        </div>
+    </div>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ========================================================================
+// PGC DATA
+// ========================================================================
+const PGC_GROUPS=[
+{num:"1",name:"Financiación básica",type:"Pasivo / Neto",normal:"Haber",desc:"Recoge el origen de los fondos a largo plazo.",subgroups:[
+{num:"10",name:"Fondos propios",accounts:[
+{n:"1000",name:"Capital social",desc:"Aportaciones de los socios"},{n:"1010",name:"Aportaciones que no representan capital",desc:""},{n:"1020",name:"Prima de emisión",desc:"Diferencia entre valor nominal y precio"},{n:"1030",name:"Reservas legales",desc:"Obligatoria: 5% hasta 20% del capital"},{n:"1040",name:"Reservas voluntarias",desc:"Constituidas por acuerdo de la junta"},{n:"1050",name:"Reservas especiales",desc:""},{n:"1080",name:"Resultados de ejercicios anteriores",desc:""},{n:"1090",name:"Otras Reservas",desc:""},{n:"1100",name:"Resultados del ejercicio corriente",desc:"Beneficio o pérdida acumulada"},{n:"1120",name:"Dividendos a distribuir",desc:""}
+]},
+{num:"11",name:"Reservas",accounts:[{n:"1100",name:"Reserva legal",desc:""},{n:"1120",name:"Reservas voluntarias",desc:""},{n:"1140",name:"Reserva por inversiones",desc:""}]},
+{num:"12",name:"Resultados pendientes de aplicación",accounts:[{n:"1200",name:"Resultados negativos de ejercicios anteriores",desc:""}]},
+{num:"13",name:"Resultado del ejercicio",accounts:[{n:"1300",name:"Resultado del ejercicio",desc:"Se carga el beneficio, se abona la pérdida"},{n:"1310",name:"Gastos imputados al patrimonio neto",desc:""},{n:"1320",name:"Ingresos imputados al patrimonio neto",desc:""}]},
+{num:"14",name:"Ingresos a distribuir en varios ejercicios",accounts:[{n:"1400",name:"Subvenciones de capital",desc:""},{n:"1410",name:"Ingresos fiscales a distribuir",desc:""}]},
+{num:"15",name:"Provisiones pasivas",accounts:[{n:"1500",name:"Provisiones por pensiones",desc:""},{n:"1510",name:"Provisiones para garantías",desc:""},{n:"1520",name:"Provisiones por contratos onerosos",desc:""},{n:"1530",name:"Provisiones por tributos",desc:""},{n:"1540",name:"Otras provisiones",desc:""}]},
+{num:"17",name:"Deudas a largo plazo",accounts:[{n:"1700",name:"Préstamos entidades crédito a lt",desc:""},{n:"1710",name:"Obligaciones y otros valores",desc:""},{n:"1720",name:"Deudas con empresas del grupo",desc:""},{n:"1730",name:"Deudas a lt con partícipes",desc:""},{n:"1740",name:"Otras deudas a largo plazo",desc:""},{n:"1750",name:"Intereses corrientes devengados",desc:""}]},
+{num:"19",name:"Pasivos por impuestos diferidos",accounts:[{n:"1900",name:"Ajustes negativos del impuesto",desc:""}]}
+]},
+{num:"2",name:"Activo no corriente",type:"Activo",normal:"Debe",desc:"Bienes y derechos con vida útil > 1 año.",subgroups:[
+{num:"20",name:"Inmovilizado intangible",accounts:[{n:"2000",name:"Fondo de comercio",desc:""},{n:"2010",name:"Propiedad industrial",desc:""},{n:"2020",name:"Fórmulas y métodos",desc:""},{n:"2030",name:"Derechos de traspaso",desc:""},{n:"2040",name:"Aplicaciones informáticas",desc:"Software"},{n:"2060",name:"Investigación y desarrollo",desc:""},{n:"2070",name:"Otros inmovilizados intangibles",desc:""}]},
+{num:"21",name:"Inmovilizado material",accounts:[{n:"2100",name:"Terrenos y bienes naturales",desc:""},{n:"2110",name:"Edificios",desc:""},{n:"2120",name:"Instalaciones técnicas",desc:""},{n:"2130",name:"Maquinaria",desc:""},{n:"2140",name:"Utillaje",desc:""},{n:"2160",name:"Mobiliario",desc:""},{n:"2170",name:"Equipos para procesos de información",desc:""},{n:"2180",name:"Elementos de transporte",desc:""},{n:"2190",name:"Otros inmovilizados materiales",desc:""}]},
+{num:"22",name:"Inversiones materiales en curso",accounts:[{n:"2200",name:"Inversiones en inmovilizado en curso",desc:""}]},
+{num:"23",name:"Inversiones inmobiliarias",accounts:[{n:"2300",name:"Inversiones en terrenos",desc:""},{n:"2310",name:"Inversiones en edificios",desc:""}]},
+{num:"24",name:"Inversiones en grupo y asociadas",accounts:[{n:"2400",name:"Inversiones en empresas del grupo",desc:""},{n:"2420",name:"Inversiones en asociadas",desc:""}]},
+{num:"25",name:"Inversiones financieras a lt",accounts:[{n:"2500",name:"Valores de deuda a lt",desc:""},{n:"2510",name:"Préstamos a lt a terceros",desc:""},{n:"2520",name:"Otros préstamos a lt",desc:""}]},
+{num:"26",name:"Activos por impuestos diferidos",accounts:[{n:"2600",name:"Ajustes positivos del impuesto",desc:""}]}
+]},
+{num:"3",name:"Existencias",type:"Activo",normal:"Debe",desc:"Stock de la empresa.",subgroups:[
+{num:"30",name:"Compras",accounts:[{n:"3000",name:"Compras de mercaderías",desc:""},{n:"3004",name:"Compras de materias primas",desc:""},{n:"3006",name:"Devoluciones de compras",desc:""},{n:"3008",name:"Descuentos por pronto pago",desc:""}]},
+{num:"31",name:"Variaciones de existencias",accounts:[{n:"3100",name:"Variación de stocks de mercaderías",desc:""},{n:"3101",name:"Variación de stocks de materias primas",desc:""}]},
+{num:"32",name:"Servicios exteriorizados",accounts:[{n:"3200",name:"Trabajos subcontratados",desc:""}]},
+{num:"33",name:"Otros gastos externos",accounts:[{n:"3300",name:"Arrendamientos y cánones",desc:""},{n:"3310",name:"Reparaciones y conservación",desc:""},{n:"3320",name:"Servicios profesionales",desc:""},{n:"3330",name:"Transportes",desc:""},{n:"3340",name:"Primas de seguros",desc:""},{n:"3350",name:"Servicios bancarios",desc:""},{n:"3360",name:"Otros servicios exteriores",desc:""}]},
+{num:"34",name:"Tributos",accounts:[{n:"3400",name:"Impuesto sobre beneficios",desc:""},{n:"3420",name:"Otros tributos",desc:""}]},
+{num:"35",name:"Gastos de personal",accounts:[{n:"3500",name:"Sueldos y salarios",desc:""},{n:"3510",name:"Indemnizaciones",desc:""},{n:"3520",name:"Seguridad social",desc:""}]},
+{num:"36",name:"Amortizaciones",accounts:[{n:"3600",name:"Amortización inmovilizado intangible",desc:""},{n:"3610",name:"Amortización inmovilizado material",desc:""}]},
+{num:"37",name:"Otros gastos",accounts:[{n:"3700",name:"Pérdidas de valor de existencias",desc:""},{n:"3710",name:"Siniestros del inmovilizado",desc:""}]},
+{num:"38",name:"Gastos financieros",accounts:[{n:"3800",name:"Gastos financieros por préstamos",desc:""},{n:"3810",name:"Pérdidas de valor de inversiones",desc:""},{n:"3830",name:"Diferencias negativas de cambio",desc:""}]},
+{num:"39",name:"Pérdidas de valor y provisiones",accounts:[{n:"3900",name:"Pérdidas de valor de activos",desc:""},{n:"3910",name:"Dotación a provisiones",desc:""}]}
+]},
+{num:"4",name:"Acreedores y deudas a corto plazo",type:"Pasivo",normal:"Haber",desc:"Deudas a corto plazo.",subgroups:[
+{num:"40",name:"Proveedores",accounts:[{n:"4000",name:"Proveedores",desc:"Deudas por compras"},{n:"4010",name:"Proveedores, efectos a pagar",desc:""},{n:"4030",name:"Anticipos a proveedores",desc:""}]},
+{num:"41",name:"Acreedores varios",accounts:[{n:"4100",name:"Acreedores varios",desc:""},{n:"4101",name:"Acreedores por arrendamientos",desc:""},{n:"4102",name:"Acreedores por servicios profesionales",desc:""}]},
+{num:"43",name:"Clientes",accounts:[{n:"4300",name:"Clientes",desc:""},{n:"4310",name:"Clientes, efectos a cobrar",desc:""},{n:"4320",name:"Clientes, deudores dudosos",desc:""},{n:"4350",name:"Clientes, anticipos recibidos",desc:""}]},
+{num:"44",name:"Organismos públicos",accounts:[{n:"4400",name:"H.P., IVA soportado",desc:""},{n:"4407",name:"H.P., retenciones practicadas",desc:""},{n:"4410",name:"Seguridad Social",desc:""},{n:"4450",name:"H.P., retenciones a cuenta",desc:""}]},
+{num:"47",name:"Hacienda Pública",accounts:[{n:"4700",name:"H.P., IVA soportado no deducible",desc:""},{n:"4710",name:"H.P., IVA retenido a proveedores",desc:""},{n:"4720",name:"H.P., IVA soportado",desc:"IVA deducible"},{n:"4730",name:"H.P., bases imponibles del IVA",desc:""},{n:"4750",name:"H.P., pagos fraccionados",desc:""},{n:"4751",name:"H.P., IVA soportado en inversiones",desc:""},{n:"4770",name:"H.P., IVA repercutido",desc:"IVA a ingresar"}]},
+{num:"48",name:"Cuentas internas de grupo",accounts:[{n:"4800",name:"Cuentas de balanceo de grupo",desc:""}]}
+]},
+{num:"5",name:"Cuentas de socios y administración",type:"Mixto",normal:"Variable",desc:"Relaciones con socios y administración.",subgroups:[
+{num:"50",name:"Socios por aportaciones",accounts:[{n:"5000",name:"Capital social",desc:""}]},
+{num:"51",name:"Socios por desembolsos",accounts:[{n:"5100",name:"Capital no exigido a lt",desc:""}]},
+{num:"52",name:"Socios por dividendos",accounts:[{n:"5200",name:"Dividendos a distribuir",desc:""}]},
+{num:"55",name:"Administración",accounts:[{n:"5500",name:"Administración, cta corriente",desc:""},{n:"5510",name:"Administración, anticipos",desc:""}]},
+{num:"57",name:"Tesorería",accounts:[{n:"5700",name:"Caja",desc:""},{n:"5720",name:"Bancos",desc:""},{n:"5730",name:"Otros créditos",desc:""}]}
+]},
+{num:"6",name:"Gastos",type:"Gasto",normal:"Debe",desc:"Todos los gastos de la empresa.",subgroups:[
+{num:"60",name:"Compras",accounts:[{n:"6000",name:"Compras de mercaderías",desc:""},{n:"6004",name:"Compras de materias primas",desc:""},{n:"6006",name:"Devoluciones de compras",desc:""},{n:"6008",name:"Descuentos pronto pago compras",desc:""}]},
+{num:"61",name:"Variaciones de existencias",accounts:[{n:"6100",name:"Variación stocks mercaderías",desc:""},{n:"6101",name:"Variación stocks materias primas",desc:""}]},
+{num:"62",name:"Servicios exteriorizados",accounts:[{n:"6200",name:"Trabajos por otros empresas",desc:""},{n:"6210",name:"Reparaciones y conservación",desc:""},{n:"6220",name:"Servicios profesionales",desc:""},{n:"6230",name:"Transportes",desc:""},{n:"6240",name:"Primas de seguros",desc:""},{n:"6250",name:"Servicios bancarios",desc:""},{n:"6260",name:"Otros servicios exteriores",desc:""}]},
+{num:"63",name:"Otros gastos externos",accounts:[{n:"6300",name:"Arrendamientos y cánones",desc:""},{n:"6310",name:"Arrendamientos",desc:""},{n:"6340",name:"Publicidad y relaciones públicas",desc:""},{n:"6350",name:"Comisiones y gastos de ventas",desc:""},{n:"6360",name:"Transportes",desc:""},{n:"6370",name:"Primas de seguros",desc:""},{n:"6380",name:"Otros gastos de gestión",desc:""}]},
+{num:"64",name:"Tributos",accounts:[{n:"6400",name:"Impuesto sobre beneficios",desc:""},{n:"6430",name:"IVA",desc:""},{n:"6460",name:"Otros tributos",desc:""},{n:"6490",name:"Anticipos de impuestos",desc:""}]},
+{num:"65",name:"Gastos de personal",accounts:[{n:"6500",name:"Sueldos y salarios",desc:""},{n:"6510",name:"Indemnizaciones",desc:""},{n:"6520",name:"SS a cargo de empresa",desc:""},{n:"6540",name:"Pensiones",desc:""},{n:"6550",name:"Otras retribuciones",desc:""},{n:"6580",name:"Otros gastos sociales",desc:""},{n:"6590",name:"Anticipos de sueldos",desc:""}]},
+{num:"66",name:"Amortizaciones",accounts:[{n:"6600",name:"Amortización inmovilizado intangible",desc:""},{n:"6610",name:"Amortización inmovilizado material",desc:""},{n:"6620",name:"Amortización inversiones curso",desc:""},{n:"6630",name:"Amortización inversiones inmobiliarias",desc:""}]},
+{num:"67",name:"Otros gastos gestión",accounts:[{n:"6700",name:"Gastos financieros por préstamos",desc:""},{n:"6710",name:"Pérdidas de valor activos",desc:""},{n:"6720",name:"Gastos por dividendos",desc:""},{n:"6730",name:"Otros gastos financieros",desc:""},{n:"6740",name:"Intereses corrientes devengados",desc:""},{n:"6750",name:"Diferencias negativas de cambio",desc:""}]},
+{num:"68",name:"Gastos financieros extraordinarios",accounts:[{n:"6800",name:"Siniestros del inmovilizado",desc:""},{n:"6810",name:"Gastos extraordinarios",desc:""}]},
+{num:"69",name:"Pérdidas de valor y provisiones",accounts:[{n:"6900",name:"Dotación deterioro activos",desc:""},{n:"6910",name:"Dotación provisiones insolvencias",desc:""},{n:"6920",name:"Dotación provisiones garantías",desc:""},{n:"6930",name:"Dotación provisiones contratos",desc:""},{n:"6940",name:"Dotación provisiones remuneraciones",desc:""},{n:"6950",name:"Dotación provisiones impuestos",desc:""},{n:"6960",name:"Dotación otras provisiones",desc:""}]}
+]},
+{num:"7",name:"Ingresos",type:"Ingreso",normal:"Haber",desc:"Todos los ingresos de la empresa.",subgroups:[
+{num:"70",name:"Ventas",accounts:[{n:"7000",name:"Ventas de mercaderías",desc:""},{n:"7006",name:"Devoluciones de ventas",desc:""},{n:"7008",name:"Descuentos pronto pago ventas",desc:""},{n:"7009",name:"Descuentos comerciales",desc:""}]},
+{num:"71",name:"Variaciones existencias",accounts:[{n:"7100",name:"Trabajos realizados por la empresa",desc:""}]},
+{num:"72",name:"Trabajos realizados",accounts:[{n:"7200",name:"Servicios vendidos",desc:""},{n:"7210",name:"Trabajos realizados",desc:""}]},
+{num:"73",name:"Subvenciones a la explotación",accounts:[{n:"7300",name:"Subvenciones corrientes",desc:""}]},
+{num:"74",name:"Otros ingresos gestión",accounts:[{n:"7400",name:"Alquileres inmuebles",desc:""},{n:"7460",name:"Cánones",desc:""},{n:"7470",name:"Otros ingresos gestión",desc:""}]},
+{num:"75",name:"Ingresos financieros",accounts:[{n:"7500",name:"Ingresos valores mobiliarios",desc:""},{n:"7510",name:"Intereses préstamos a terceros",desc:""},{n:"7520",name:"Beneficios en participaciones",desc:""},{n:"7530",name:"Diferencias positivas de cambio",desc:""},{n:"7580",name:"Ingresos por dividendos",desc:""},{n:"7590",name:"Otros ingresos financieros",desc:""}]},
+{num:"76",name:"Valoraciones activos",accounts:[{n:"7600",name:"Beneficios por inversiones",desc:""},{n:"7610",name:"Beneficios enajenación inversiones",desc:""},{n:"7690",name:"Otros ingresos activos",desc:""}]},
+{num:"77",name:"Subvenciones, donaciones y legados",accounts:[{n:"7700",name:"Subvenciones a la explotación",desc:""},{n:"7710",name:"Donaciones",desc:""},{n:"7730",name:"Subvenciones para inmovilizado",desc:""},{n:"7740",name:"Subvenciones de explotación",desc:""}]},
+{num:"79",name:"Exceso de provisiones",accounts:[{n:"7900",name:"Exceso de provisiones",desc:""}]}
+]},
+{num:"8",name:"Gastos e ingresos ejercicios anteriores",type:"Resultado",normal:"Variable",desc:"Correcciones de ejercicios anteriores.",subgroups:[
+{num:"80",name:"Gastos de ejercicios anteriores",accounts:[{n:"8000",name:"Gastos de ejercicios anteriores",desc:""}]},
+{num:"81",name:"Ingresos de ejercicios anteriores",accounts:[{n:"8100",name:"Ingresos de ejercicios anteriores",desc:""}]},
+{num:"89",name:"Resultado de ejercicios anteriores",accounts:[{n:"8900",name:"Resultado de ejercicios anteriores",desc:""}]}
+]},
+{num:"9",name:"Resultado del ejercicio",type:"Resultado",normal:"Variable",desc:"Cierre de PyG y regularización.",subgroups:[
+{num:"90",name:"Gastos del ejercicio",accounts:[{n:"9000",name:"Gastos de compras",desc:""},{n:"9010",name:"Gastos de variaciones existencias",desc:""},{n:"9020",name:"Gastos servicios exteriorizados",desc:""},{n:"9030",name:"Otros gastos externos",desc:""},{n:"9040",name:"Gastos de tributos",desc:""},{n:"9050",name:"Gastos de personal",desc:""},{n:"9060",name:"Gastos de amortizaciones",desc:""},{n:"9070",name:"Otros gastos gestión",desc:""},{n:"9080",name:"Gastos financieros",desc:""},{n:"9090",name:"Pérdidas de valor y provisiones",desc:""}]},
+{num:"91",name:"Ingresos del ejercicio",accounts:[{n:"9100",name:"Ventas de mercaderías",desc:""},{n:"9110",name:"Trabajos realizados",desc:""},{n:"9120",name:"Subvenciones a la explotación",desc:""},{n:"9130",name:"Otros ingresos gestión",desc:""},{n:"9140",name:"Ingresos financieros",desc:""},{n:"9160",name:"Otros ingresos activos",desc:""},{n:"9170",name:"Subvenciones donaciones legados",desc:""},{n:"9190",name:"Exceso de provisiones",desc:""}]},
+{num:"92",name:"PyG por función",accounts:[{n:"9200",name:"Importe neto cifra negocios",desc:""},{n:"9210",name:"Gastos de explotación",desc:""},{n:"9220",name:"Gastos administración",desc:""},{n:"9230",name:"Gastos comerciales",desc:""},{n:"9260",name:"Resultado operaciones continuadas",desc:""}]},
+{num:"99",name:"Resultado simplificado",accounts:[{n:"9900",name:"Resultado del ejercicio",desc:""}]}
+]}
+];
+
+// ========================================================================
+// OPERATIONS (40+)
+// ========================================================================
+const OPERATIONS=[
+{id:"compra-merc-iva",name:"Compra de mercaderías con IVA",icon:"🛒",category:"compra",desc:"Adquisición de mercaderías con IVA deducible a crédito.",
+entry:[{acc:"6000",desc:"Compras de mercaderías",type:"D",amountLabel:"Base imponible"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA (21%)"},{acc:"4000",desc:"Proveedores",type:"C",amountLabel:"Total factura"}],
+why:"Compras es gasto → se debita. IVA Soportado es derecho a deducir → se debita. Proveedores es deuda → se acreeda.",tip:"Solo deduces IVA si la factura cumple requisitos formales.",example:{labels:["Base","IVA (21%)","Total"],values:["1.000,00 €","210,00 €","1.210,00 €"]}},
+{id:"compra-servicio",name:"Compra de servicios profesionales",icon:"💼",category:"compra",desc:"Pago a profesional con retención IRPF.",
+entry:[{acc:"6220",desc:"Servicios profesionales",type:"D",amountLabel:"Base imponible"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA (21%)"},{acc:"4751",desc:"H.P. retenciones a cuenta",type:"D",amountLabel:"Retención (19%)"},{acc:"4102",desc:"Acreedores servicios profes.",type:"C",amountLabel:"Total a pagar"}],
+why:"Retención: ahorras IRPF pero debes ingresarla a Hacienda.",tip:"Retención: 19% (1er año), 21% (2º-3er), 24% (desde 3er).",example:{labels:["Base","IVA","Retención","Total"],values:["1.000,00 €","210,00 €","190,00 €","1.020,00 €"]}},
+{id:"compra-material",name:"Compra de inmovilizado",icon:"🖥️",category:"compra",desc:"Adquisición de equipo con vida útil >1 año.",
+entry:[{acc:"2170",desc:"Equipos procesos información",type:"D",amountLabel:"Coste"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA (21%)"},{acc:"4000",desc:"Proveedores",type:"C",amountLabel:"Total factura"}],
+why:"Inmovilizado es activo → se debita. IVA en inversiones a 4720 si deducible.",tip:"Si IVA no es deducible (coches), usa 4700.",example:{labels:["Base","IVA","Total"],values:["2.000,00 €","420,00 €","2.420,00 €"]}},
+{id:"compra-devolucion",name:"Devolución de compra",icon:"↩️",category:"compra",desc:"Devoluciones al proveedor.",
+entry:[{acc:"4000",desc:"Proveedores",type:"D",amountLabel:"Base+IVA"},{acc:"6006",desc:"Devoluciones de compras",type:"C",amountLabel:"Base"},{acc:"4720",desc:"H.P. IVA Soportado",type:"C",amountLabel:"IVA devuelto"}],
+why:"Devoluciones de compras reduce gasto → se abona. Proveedores baja → se debita.",tip:"Registra en el mismo ejercicio. Ajusta modelo 303 si es necesario.",example:{labels:["Base","IVA","Total"],values:["500,00 €","105,00 €","605,00 €"]}},
+{id:"venta-merc-iva",name:"Venta de mercaderías con IVA",icon:"💰",category:"venta",desc:"Venta con IVA repercutido a crédito.",
+entry:[{acc:"4300",desc:"Clientes",type:"D",amountLabel:"Total factura"},{acc:"7000",desc:"Ventas de mercaderías",type:"C",amountLabel:"Base imponible"},{acc:"4770",desc:"H.P. IVA Repercutido",type:"C",amountLabel:"IVA (21%)"}],
+why:"Clientes es activo → se debita. Ventas es ingreso → se acreeda. IVA Repercutido es deuda con Hacienda.",tip:"IVA repercutido NUNCA es ingreso: es pasivo transitorio.",example:{labels:["Base","IVA","Total"],values:["1.500,00 €","315,00 €","1.815,00 €"]}},
+{id:"venta-servicio",name:"Prestación de servicios",icon:"🔧",category:"venta",desc:"Facturación de servicios con IVA.",
+entry:[{acc:"4300",desc:"Clientes",type:"D",amountLabel:"Total a cobrar"},{acc:"7200",desc:"Servicios vendidos",type:"C",amountLabel:"Base"},{acc:"4770",desc:"H.P. IVA Repercutido",type:"C",amountLabel:"IVA (21%)"}],
+why:"Clientes es activo → se debita. Servicios vendidos es ingreso → se acreeda.",tip:"Si el cliente es profesional, te retiene IRPF.",example:{labels:["Base","IVA","Total"],values:["3.000,00 €","630,00 €","3.630,00 €"]}},
+{id:"venta-devolucion",name:"Devolución de venta",icon:"↩️",category:"venta",desc:"Devolución de mercaderías por cliente.",
+entry:[{acc:"7006",desc:"Devoluciones de ventas",type:"D",amountLabel:"Base"},{acc:"4770",desc:"H.P. IVA Repercutido",type:"C",amountLabel:"IVA"},{acc:"4300",desc:"Clientes",type:"C",amountLabel:"Total"}],
+why:"Devoluciones reduce ingreso → se debita. Clientes baja → se acreeda.",tip:"Emite factura rectificativa.",example:{labels:["Base","IVA","Total"],values:["800,00 €","168,00 €","968,00 €"]}},
+{id:"nomina",name:"Nómina de empleados",icon:"👥",category:"nomina",desc:"Registro nómina mensual con retenciones.",
+entry:[{acc:"6500",desc:"Sueldos y salarios",type:"D",amountLabel:"Salario bruto"},{acc:"6520",desc:"SS empresa",type:"D",amountLabel:"SS empresa (23,6%)"},{acc:"4710",desc:"H.P. retenciones IRPF",type:"C",amountLabel:"Retención IRPF"},{acc:"4710",desc:"H.P. SS cuota obrero",type:"C",amountLabel:"SS obrero (6,35%)"},{acc:"4100",desc:"Acreedores varios",type:"C",amountLabel:"Neto a pagar"}],
+why:"Sueldos y SS empresa son gastos → se debitan. Retenciones son deudas con Hacienda.",tip:"IRPF según tablas AEAT. SS varía según convenio.",example:{labels:["Bruto","IRPF","SS","Neto"],values:["2.000,00 €","300,00 €","127,00 €","1.573,00 €"]}},
+{id:"nomina-completa",name:"Nómina completa (todos los conceptos)",icon:"📝",category:"nomina",desc:"Nómina con complementos, deducciones y seguridad social detallada.",
+entry:[{acc:"6500",desc:"Sueldos y salarios",type:"D",amountLabel:"Salario base"},{acc:"6550",desc:"Otras retribuciones",type:"D",amountLabel:"Complementos"},{acc:"6520",desc:"SS empresa",type:"D",amountLabel:"SS empresa"},{acc:"4710",desc:"H.P. IRPF",type:"C",amountLabel:"IRPF"},{acc:"4710",desc:"H.P. SS obrero",type:"C",amountLabel:"SS trabajador"},{acc:"4710",desc:"H.P. Formación profesional",type:"C",amountLabel:"FP (0,1%)"},{acc:"4710",desc:"H.P. Desempleo",type:"C",amountLabel:"Desempleo"},{acc:"4100",desc:"Acreedores varios",type:"C",amountLabel:"Neto"},{acc:"4710",desc:"H.P. TGSS",type:"C",amountLabel:"SS a TGSS"}],
+why:"La nómina desglosa: bruto, cotizaciones del trabajador, IRPF, y complementos. La SS empresarial es gasto adicional.",tip:"Incluir: pagas extras, vacaciones, plus transporte, etc.",example:{labels:["Bruto","Complementos","IRPF","SS","Neto"],values:["1.800 €","200 €","320 €","133 €","1.547 €"]}},
+{id:"pago-proveedor",name:"Pago a proveedor",icon:"🏦",category:"financiero",desc:"Transferencia bancaria a proveedor.",
+entry:[{acc:"4000",desc:"Proveedores",type:"D",amountLabel:"Importe"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Importe pagado"}],
+why:"Proveedores baja (pagas) → se debita. Bancos baja → se acreeda.",tip:"Si hay descuento pronto pago, registra en 6080.",example:{labels:["Importe"],values:["1.210,00 €"]}},
+{id:"cobro-cliente",name:"Cobro de cliente",icon:"💵",category:"financiero",desc:"Transferencia recibida de cliente.",
+entry:[{acc:"5720",desc:"Bancos",type:"D",amountLabel:"Importe cobrado"},{acc:"4300",desc:"Clientes",type:"C",amountLabel:"Importe facturado"}],
+why:"Bancos sube → se debita. Clientes baja → se acreeda.",tip:"",example:{labels:["Importe"],values:["1.815,00 €"]}},
+{id:"prestamo-recibido",name:"Préstamo bancario recibido",icon:"🏛️",category:"financiero",desc:"Concesión de préstamo por entidad de crédito.",
+entry:[{acc:"5720",desc:"Bancos",type:"D",amountLabel:"Importe prestado"},{acc:"1700",desc:"Préstamos entidades crédito",type:"C",amountLabel:"Capital a devolver"}],
+why:"Bancos sube → se debita. Préstamo es deuda a lt → se acreeda.",tip:"Si es a corto plazo (<1 año), usa cuenta 520.",example:{labels:["Importe"],values:["50.000,00 €"]}},
+{id:"pago-intereses",name:"Pago de intereses",icon:"📈",category:"financiero",desc:"Cobro de intereses por préstamo.",
+entry:[{acc:"6700",desc:"Gastos financieros préstamos",type:"D",amountLabel:"Intereses"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Importe"}],
+why:"Intereses son gasto financiero → se debita.",tip:"Los intereses son gasto deducible.",example:{labels:["Intereses"],values:["250,00 €"]}},
+{id:"amort-material",name:"Amortización inmovilizado material",icon:"📉",category:"otro",desc:"Dotación anual de depreciación.",
+entry:[{acc:"6610",desc:"Amort. inmovilizado material",type:"D",amountLabel:"Cuota anual"},{acc:"2810",desc:"Amort. acumulada inmov. mat.",type:"C",amountLabel:"Cuota anual"}],
+why:"Amortización es gasto → se debita. Amort. acumulada reduce activo → se acreeda.",tip:"Usar método coherente con vida útil real. Art. 29 LIRPF.",example:{labels:["Valor","Vida útil","Cuota (20%)"],values:["10.000 €","5 años","2.000 €"]}},
+{id:"amort-intangible",name:"Amortización inmovilizado intangible",icon:"💻",category:"otro",desc:"Depreciación de software, patentes.",
+entry:[{acc:"6600",desc:"Amort. inmov. intangible",type:"D",amountLabel:"Cuota anual"},{acc:"2800",desc:"Amort. acumulada intang.",type:"C",amountLabel:"Cuota anual"}],
+why:"Gasto → debe; acumulada → haber.",tip:"Software: ~25% (4 años). Patentes: según vida.",example:{labels:["Software","Amortización (25%)"],values:["8.000 €","2.000 €"]}},
+{id:"amort-degresiva",name:"Amortización degresiva",icon:"📉",category:"otro",desc:"Amortización por método degresivo (acelerado).",
+entry:[{acc:"6610",desc:"Amort. inmov. material",type:"D",amountLabel:"Cuota degresiva"},{acc:"2810",desc:"Amort. acumulada inmov. mat.",type:"C",amountLabel:"Cuota degresiva"}],
+why:"El método degresivo aplica un porcentaje mayor los primeros años sobre el valor neto.",tip:"Permite acelerar la amortización fiscal. Máx. 1,5× el lineal.",example:{labels:["Valor neto","Tipo (30%)","Cuota"],values:["10.000 €","30%","3.000 €"]}},
+{id:"gastos-bancarios",name:"Gastos bancarios",icon:"🏦",category:"financiero",desc:"Comisiones bancarias con IVA.",
+entry:[{acc:"6250",desc:"Servicios bancarios",type:"D",amountLabel:"Importe gasto"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Total"}],
+why:"Gasto bancario → se debita. IVA deducible → se debita.",tip:"",example:{labels:["Gasto","IVA","Total"],values:["40 €","8,40 €","48,40 €"]}},
+{id:"pago-irpf",name:"Pago retenciones IRPF trimestral",icon:"🏛️",category:"impuesto",desc:"Ingreso trimestral de retenciones IRPF.",
+entry:[{acc:"4751",desc:"H.P. retenciones a cuenta",type:"D",amountLabel:"Total retenciones"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Importe pagado"}],
+why:"Cancelas deuda (pasivo → debita). Bancos paga → acreeda.",tip:"Plazos: Q1(abr), Q2(jul), Q3(oct), Q4(ene). Modelo 111.",example:{labels:["Retención trimestral"],values:["1.200,00 €"]}},
+{id:"pago-iva",name:"Pago trimestral de IVA",icon:"💶",category:"impuesto",desc:"Liquidación trimestral modelo 303.",
+entry:[{acc:"4770",desc:"H.P. IVA Repercutido",type:"D",amountLabel:"IVA repercutido"},{acc:"4720",desc:"H.P. IVA Soportado",type:"C",amountLabel:"IVA soportado"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Cuota a ingresar"}],
+why:"Cancelas repercutido contra soportado. Resultado al banco.",tip:"Si soportado > repercutido, saldo a favor.",example:{labels:["Repercutido","Soportado","A ingresar"],values:["3.000 €","1.500 €","1.500 €"]}},
+{id:"constitucion",name:"Constitución de sociedad",icon:"🏢",category:"societario",desc:"Aporte inicial de capital para constituir sociedad.",
+entry:[{acc:"5720",desc:"Bancos",type:"D",amountLabel:"Aporte dinerario"},{acc:"2170",desc:"Equipos procesos información",type:"D",amountLabel:"Bienes aportados"},{acc:"1000",desc:"Capital social",type:"C",amountLabel:"Capital suscrito"}],
+why:"Bienes y dinero son activos → se debitan. Capital social es fondos propios → se acreeda.",tip:"Si hay prima de emisión, usa cuenta 1020.",example:{labels:["Dinerario","Bienes","Capital"],values:["30.000 €","20.000 €","50.000 €"]}},
+{id:"aportacion-capital",name:"Aportación de capital social",icon:"💰",category:"societario",desc:"Nueva aportación de capital por socios.",
+entry:[{acc:"5720",desc:"Bancos",type:"D",amountLabel:"Importe aportado"},{acc:"1000",desc:"Capital social",type:"C",amountLabel:"Capital"}],
+why:"Bancos sube → debita. Capital social sube → acreeda.",tip:"Requiere acuerdo de junta y modificación estatutos.",example:{labels:["Importe"],values:["25.000,00 €"]}},
+{id:"reduccion-capital",name:"Reducción de capital social",icon:"📉",category:"societario",desc:"Devolución de aportaciones o reducción de nominal.",
+entry:[{acc:"1000",desc:"Capital social",type:"D",amountLabel:"Importe reducción"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Importe devuelto"}],
+why:"Capital baja (fondos propios disminuyen) → se debita. Bancos baja → se acreeda.",tip:"Requiere reducción de capital registrada en el Registro Mercantil.",example:{labels:["Importe"],values:["10.000,00 €"]}},
+{id:"dividendos",name:"Dividendos (reparto beneficios)",icon:"🎁",category:"societario",desc:"Reparto de beneficios entre socios.",
+entry:[{acc:"1100",desc:"Resultados ejercicio corriente",type:"D",amountLabel:"Beneficio a distribuir"},{acc:"1120",desc:"Dividendos a distribuir",type:"C",amountLabel:"Dividendos"}],
+why:"Resultado baja (se distribuye) → debita. Dividendos a distribuir es pasivo → acreeda.",tip:"Primero cubrir reserva legal (5% hasta 20% del capital).",example:{labels:["Beneficio","Dividendos"],values:["50.000 €","30.000 €"]}},
+{id:"pago-dividendos",name:"Pago de dividendos",icon:"💵",category:"societario",desc:"Abono efectivo de dividendos a socios.",
+entry:[{acc:"1120",desc:"Dividendos a distribuir",type:"D",amountLabel:"Importe a pagar"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Importe pagado"}],
+why:"Dividendos a pagar baja → debita. Bancos baja → acreeda.",tip:"Retención del 19% sobre dividendos.",example:{labels:["Importe"],values:["30.000,00 €"]}},
+{id:"dotacion-provision",name:"Dotación a provisiones",icon:"🛡️",category:"otro",desc:"Creación de provisión para garantías o contratos.",
+entry:[{acc:"6920",desc:"Dotación prov. garantías",type:"D",amountLabel:"Importe"},{acc:"1510",desc:"Provisiones para garantías",type:"C",amountLabel:"Importe"}],
+why:"Dotación es gasto → debita. Provisión es pasivo → acreeda.",tip:"Solo deducibles si cumplen art. 14.2 TRLIS.",example:{labels:["Dotación"],values:["5.000,00 €"]}},
+{id:"release-provision",name:"Release de provisiones (minoración)",icon:"🔓",category:"otro",desc:"Minoración de provisiones cuando ya no son necesarias.",
+entry:[{acc:"1510",desc:"Provisiones para garantías",type:"D",amountLabel:"Importe"},{acc:"7900",desc:"Exceso de provisiones",type:"C",amountLabel:"Importe"}],
+why:"Provisión baja (ya no se necesita) → debita. Exceso es ingreso → acreeda.",tip:"Revertir proporcionalmente la dotación original.",example:{labels:["Importe"],values:["2.000,00 €"]}},
+{id:"cobro-subvencion",name:"Cobro de subvención",icon:"🎁",category:"otro",desc:"Ingreso de subvención pública.",
+entry:[{acc:"5720",desc:"Bancos",type:"D",amountLabel:"Importe cobrado"},{acc:"7700",desc:"Subvenciones explotación",type:"C",amountLabel:"Importe"}],
+why:"Bancos sube → debita. Subvención es ingreso → acreeda.",tip:"Subvención de inmovilizado va a 7730. Se integra fiscalmente.",example:{labels:["Subvención"],values:["15.000,00 €"]}},
+{id:"ingresos-diferidos",name:"Ingresos diferidos (cobros anticipados)",icon:"⏳",category:"otro",desc:"Cobro anticipado de servicios a prestar en varios ejercicios.",
+entry:[{acc:"5720",desc:"Bancos",type:"D",amountLabel:"Importe cobrado"},{acc:"4800",desc:"Ingresos por cobros anticipados",type:"C",amountLabel:"Importe"}],
+why:"Bancos sube → debita. Ingresos diferidos es pasivo → acreeda.",tip:"Regularizar mensualmente reconociendo ingreso conforme se preste el servicio.",example:{labels:["Anticipo","Duración","Mensual"],values:["12.000 €","12 meses","1.000 €/mes"]}},
+{id:"regularizacion-stock",name:"Regularización de existencias (cierre)",icon:"📊",category:"otro",desc:"Ajuste de existencias a valor de mercado al cierre.",
+entry:[{acc:"6100",desc:"Variación stocks mercaderías",type:"D",amountLabel:"Deterioro"},{acc:"3100",desc:"Variación stocks mercaderías",type:"C",amountLabel:"Deterioro"}],
+why:"Si valor mercado < coste, se regulariza por deterioro.",tip:"OBLIGATORIA al cierre. Art. 38 Ley Sociedades de Capital.",example:{labels:["Stock anterior","Final","Deterioro"],values:["20.000 €","18.000 €","2.000 €"]}},
+{id:"compra-intracomunitaria",name:"Compra intracomunitaria (0% IVA)",icon:"🇪🇺",category:"compra",desc:"Compra de bienes a proveedor de la UE con IVA 0%.",
+entry:[{acc:"6000",desc:"Compras de mercaderías",type:"D",amountLabel:"Base imponible"},{acc:"4000",desc:"Proveedores intracomunitarios",type:"C",amountLabel:"Total factura"}],
+why:"En compras intracomunitarias, el IVA es 0% (autoliquidación). El proveedor factura sin IVA.",tip:"Debes comunicar tu NIF-IVA al proveedor. Autoliquidación en modelo 303 casilla 9.",example:{labels:["Base","IVA","Total"],values:["1.000 €","0%","1.000 €"]}},
+{id:"venta-intracomunitaria",name:"Venta intracomunitaria (0% IVA)",icon:"🇪🇺",category:"venta",desc:"Venta a cliente de la UE sin IVA.",
+entry:[{acc:"4300",desc:"Clientes intracomunitarios",type:"D",amountLabel:"Total factura"},{acc:"7000",desc:"Ventas de mercaderías",type:"C",amountLabel:"Base imponible"}],
+why:"Ventas intracomunitarias: tipo 0%. El cliente autoliquida el IVA en su país.",tip:"Factura con mención 'Exenta art. 25 Ley IVA'. Declaración recapitulativa (modelo 349).",example:{labels:["Base","IVA","Total"],values:["2.000 €","0%","2.000 €"]}},
+{id:"compra-divisa",name:"Compra en divisas extranjeras",icon:"💱",category:"compra",desc:"Compra de bienes/servicios en moneda extranjera.",
+entry:[{acc:"6000",desc:"Compras de mercaderías",type:"D",amountLabel:"Base (tipo cambio día)"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA"},{acc:"4000",desc:"Proveedores",type:"C",amountLabel:"Total en €"},{acc:"7530",desc:"Diferencias positivas de cambio",type:"C",amountLabel:"Ganancia cambio (si aplica)"}],
+why:"Se contabiliza en euros al tipo de cambio del día de la operación. Las diferencias de cambio al cobro/pago van a 7530/6750.",tip:"Usar tipo de cambio oficial del BCE del día de la factura.",example:{labels:["Base €","Tipo cambio","Total €"],values:["850 €","1,18 $","850 €"]}},
+{id:"leasing",name:"Arrendamiento financiero (leasing)",icon:"🚗",category:"financiero",desc:"Contrato de leasing con reconocimiento del activo.",
+entry:[{acc:"2180",desc:"Elementos de transporte",type:"D",amountLabel:"Valor actual cuotas"},{acc:"5230",desc:"Arrend. financiero a lt",type:"C",amountLabel:"Capital a devolver a lt"},{acc:"5240",desc:"Arrend. financiero a cp",type:"C",amountLabel:"Capital a devolver a cp"}],
+why:"En leasing, el arrendatario contabiliza el activo y la deuda financiera. Las cuotas se separan en capital e intereses.",tip:"Norma NK6 o NIIF 16. Separar cuota en amortización + intereses + capital.",example:{labels:["Valor activo","Cuota mensual","Plazo"],values:["24.000 €","500 €","48 meses"]}},
+{id:"renting",name:"Renting (arrendamiento operativo)",icon:"🚗",category:"compra",desc:"Contrato de renting: gasto mensual sin reconocer activo.",
+entry:[{acc:"6210",desc:"Reparaciones y conservación",type:"D",amountLabel:"Cuota mensual"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Total cuota"}],
+why:"En renting, la cuota se registra como gasto. No se contabiliza el activo.",tip:"Diferente del leasing: no hay propiedad. Gasto deducible al 100%.",example:{labels:["Cuota","IVA","Total"],values:["400 €","84 €","484 €"]}},
+{id:"compra-financiacion",name:"Compra inmovilizado con financiación",icon:"🏦",category:"compra",desc:"Compra con préstamo bancario a largo plazo.",
+entry:[{acc:"2170",desc:"Equipos procesos información",type:"D",amountLabel:"Coste inmovilizado"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA"},{acc:"1700",desc:"Préstamos entidades crédito",type:"C",amountLabel:"Préstamo a lt"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Cuota inicial"}],
+why:"Inmovilizado y IVA se debitan. El préstamo es deuda a lt → acreeda. Si hay cuota inicial, el banco paga.",tip:"Separar claramente el activo de la financiación.",example:{labels:["Inmovilizado","IVA","Préstamo","Inicial"],values:["10.000 €","2.100 €","11.000 €","1.100 €"]}},
+{id:"iva-profesion-retencion",name:"IVA con retención a profesional",icon:"💼",category:"compra",desc:"Compra con retención IVA (regímenes especiales).",
+entry:[{acc:"6220",desc:"Servicios profesionales",type:"D",amountLabel:"Base imponible"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA retenido"},{acc:"4102",desc:"Acreedores servicios prof.",type:"C",amountLabel:"Neto al profesional"}],
+why:"En casos de retención de IVA (régimen especial), el IVA se ingresa directamente a Hacienda.",tip:"Aplica en sectores como promoción inmobiliaria, joyería, etc.",example:{labels:["Base","IVA retenido","Neto"],values:["1.000 €","210 €","790 €"]}},
+{id:"modelo-115",name:"Retenciones arrendamientos (modelo 115)",icon:"🏢",category:"impuesto",desc:"Pago trimestral de retenciones por alquileres.",
+entry:[{acc:"4751",desc:"H.P. retenciones a cuenta",type:"D",amountLabel:"Retenciones trimestrales"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Importe pagado"}],
+why:"Las retenciones sobre arrendamientos se ingresan trimestralmente. Modelo 115.",tip:"19% retención sobre alquileres de locales. Plazos: abr, jul, oct, ene.",example:{labels:["Retención trimestral"],values:["570,00 €"]}},
+{id:"iva-compra-mixta",name:"Compra material IVA deducible/no deducible",icon:"🔀",category:"compra",desc:"Compra con parte deducible y parte no deducible.",
+entry:[{acc:"6260",desc:"Otros servicios exteriores",type:"D",amountLabel:"Base imponible"},{acc:"4720",desc:"H.P. IVA Soportado deducible",type:"D",amountLabel:"IVA deducible (70%)"},{acc:"4700",desc:"H.P. IVA Soportado no deduc.",type:"D",amountLabel:"IVA no deducible (30%)"},{acc:"4000",desc:"Proveedores",type:"C",amountLabel:"Total factura"}],
+why:"Cuando un gasto tiene uso mixto (empresa y personal), se separa el IVA en deducible y no deducible.",tip:"Porcentaje según uso real documentado. Ej: hostelería parcialmente deducible.",example:{labels:["Base","IVA ded.","IVA no ded.","Total"],values:["1.000 €","147 €","63 €","1.210 €"]}},
+{id:"cierre-ejercicio",name:"Cierre de ejercicio",icon:"📊",category:"otro",desc:"Regularización de cuentas y cierre de la PyG.",
+entry:[{acc:"7000",desc:"Ventas mercaderías",type:"D",amountLabel:"Saldo ingresos"},{acc:"7200",desc:"Servicios vendidos",type:"D",amountLabel:"Saldo servicios"},{acc:"9100",desc:"Ventas mercaderías (cierre)",type:"C",amountLabel:"Transferir a cierre"},{acc:"9110",desc:"Trabajos realizados (cierre)",type:"C",amountLabel:"Transferir a cierre"},{acc:"9000",desc:"Gastos compras (cierre)",type:"D",amountLabel:"Transferir a cierre"},{acc:"6000",desc:"Compras mercaderías",type:"C",amountLabel:"Saldo gastos"},{acc:"6220",desc:"Servicios profesionales",type:"C",amountLabel:"Saldo gastos"}],
+why:"Al cierre, se transfieren todas las cuentas de gastos e ingresos a las cuentas de cierre (grupo 9). El resultado se imputa a fondos propios.",tip:"OBLIGATORIA. Incluir todas las regularizaciones: existencias, provisiones, amortizaciones.",example:{labels:["Ingresos","Gastos","Resultado"],values:["100.000 €","75.000 €","25.000 €"]}},
+{id:"apertura-ejercicio",name:"Apertura de ejercicio",icon:"📅",category:"otro",desc:"Apertura de las nuevas cuentas al inicio del ejercicio.",
+entry:[{acc:"1100",desc:"Resultados ejercicio corriente",type:"D",amountLabel:"Resultado anterior"},{acc:"1080",desc:"Resultados ejercicios anter.",type:"C",amountLabel:"Transferir a reservas"}],
+why:"El resultado del ejercicio anterior se transfiere a resultados de ejercicios anteriores. Las cuentas de gastos e ingresos se reinician a cero.",tip:"Solo si el resultado fue positivo (beneficio). Si fue negativo, el asiento se invierte.",example:{labels:["Resultado a transferir"],values:["25.000,00 €"]}},
+{id:"criptomonedas-compra",name:"Compra de criptomonedas",icon:"₿",category:"financiero",desc:"Adquisición de criptoactivos (Bitcoin, Ethereum, etc.).",
+entry:[{acc:"2500",name:"Valores de deuda a lt",type:"D",amountLabel:"Coste adquisición"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Importe pagado"}],
+why:"Las criptomonedas se contabilizan como inversiones financieras (grupo 25 o 26).",tip:"Valorar al coste de adquisición. Diferencias de cambio al cierre. Declarar en modelo 721 si > 50.000€.",example:{labels:["Bitcoin","Importe","Tipo cambio"],values:["0,5 BTC","15.000 €","30.000 €/BTC"]}},
+{id:"criptomonedas-venta",name:"Venta de criptomonedas",icon:"₿",category:"financiero",desc:"Enajenación de criptoactivos con ganancia/pérdida.",
+entry:[{acc:"5720",desc:"Bancos",type:"D",amountLabel:"Importe recibido"},{acc:"2500",desc:"Valores de deuda a lt",type:"C",amountLabel:"Coste original"},{acc:"7520",desc:"Beneficios participaciones",type:"C",amountLabel:"Ganancia (si aplica)"}],
+why:"Se cancela el activo a su coste y se registra la diferencia como ganancia o pérdida financiera.",tip:"Declarar ganancia/pérdida en IRPF (Renta). Modelo 720.",example:{labels:["Coste","Venta","Ganancia"],values:["15.000 €","20.000 €","5.000 €"]}},
+{id:"retenciones-detalle",name:"Retenciones IRPF por tipo de profesional",icon:"📝",category:"impuesto",desc:"Desglose de retenciones según tipo de actividad.",
+entry:[{acc:"6220",desc:"Servicios profesionales",type:"D",amountLabel:"Base imponible"},{acc:"4720",desc:"H.P. IVA Soportado",type:"D",amountLabel:"IVA"},{acc:"4751",desc:"H.P. retenciones IRPF",type:"D",amountLabel:"Retención"},{acc:"4102",desc:"Acreedores servicios prof.",type:"C",amountLabel:"Neto a pagar"}],
+why:"La retención varía: 15% deportistas artistas, 19% abogados 1er año, 21% general, 24% no residentes.",tip:"Comprobar siempre si el profesional está exento de retención.",example:{labels:["Base","IVA","Retención (21%)","Neto"],values:["2.000 €","420 €","420 €","2.000 €"]}},
+{id:"modelo-190",name:"Declaración informativa modelo 190",icon:"📋",category:"impuesto",desc:"Resumen anual de retenciones practicadas.",
+entry:[{acc:"4751",desc:"H.P. retenciones a cuenta",type:"D",amountLabel:"Retenciones anuales"},{acc:"5720",desc:"Bancos",type:"C",amountLabel:"Retenciones ingresa"}],
+why:"El modelo 190 es informativo. Se presenta anualmente detallando todas las retenciones practicadas.",tip:"Plazos: enero-febrero. Debe cuadrar con los modelos 111 trimestrales.",example:{labels:["Retenciones anuales"],values:["4.800,00 €"]}},
+];
+
+// ========================================================================
+// COMMON ERRORS (20+)
+// ========================================================================
+const COMMON_ERRORS=[
+{title:"Confundir IVA Soportado con Gasto",desc:"Registrar el IVA como gasto en vez de en cuenta 4720.",wrong:"Debe 6000 Compras 1.210€ / Haber 4000 Proveedores 1.210€",correct:"Debe 6000 1.000€ + Debe 4720 IVA 210€ / Haber 4000 1.210€",impact:"Alta",profile:"todos"},
+{title:"Olvidar la cuadratura Debe = Haber",desc:"Los importes del Debe y el Haber no coinciden.",wrong:"Debe: 1.000€ / Haber: 1.210€",correct:"Siempre Debe = Haber. Verificar antes de registrar.",impact:"Alta",profile:"todos"},
+{title:"Tratar subvenciones sin integración fiscal",desc:"No integrar la subvención en la base imponible del IS.",wrong:"Solo registrar ingreso sin tributación.",correct:"La subvención se integra en bases imponibles. Calcular efecto fiscal.",impact:"Media",profile:"profesional"},
+{title:"Amortizar sin coherencia con vida útil",desc:"Usar porcentajes sin justificación de vida útil.",wrong:"Amortizar un edificio al 50% sin justificación.",correct:"Usar tablas art. 29 LIRPF o justificar vida útil real.",impact:"Media",profile:"todos"},
+{title:"No registrar devoluciones",desc:"No contabilizar devoluciones recibidas o realizadas.",wrong:"Ignorar la devolución.",correct:"Registrar con factura rectificativa. Ajustar compras/ventas e IVA.",impact:"Media",profile:"todos"},
+{title:"Mezclar gastos de ejercicios diferentes",desc:"Contabilizar gastos de un año en otro sin justificación.",wrong:"Registrar factura del año anterior como gasto actual.",correct:"Usar criterio de devengo o cuenta 8000 (ej. anteriores).",impact:"Alta",profile:"todos"},
+{title:"Olvidar retenciones a profesionales",desc:"No practicar retención IRPF cuando es obligatoria.",wrong:"Pagar factura completa sin retener.",correct:"Retener según tablas y declarar trimestralmente (modelo 111).",impact:"Alta",profile:"todos"},
+{title:"No conciliar IVA mensualmente",desc:"Solo revisar el IVA al hacer la liquidación trimestral.",wrong:"Dejar errores acumulados 3 meses.",correct:"Conciliar mensualmente: cuadrar 4720, 4770 y libro registro.",impact:"Media",profile:"todos"},
+{title:"Confundir provisión con gasto no deducible",desc:"Dotar provisiones que no cumplen requisitos de deducibilidad.",wrong:"Dotar provisiones genéricas sin justificación.",correct:"Solo deducibles las del art. 14.2 TRLIS.",impact:"Media",profile:"profesional"},
+{title:"No amortizar intangible de vida limitada",desc:"No dotar amortización en software y patentes.",wrong:"Mantener software sin amortización.",correct:"Amortizar según vida útil: software ~25%, patentes según vida.",impact:"Media",profile:"todos"},
+{title:"No conciliar cuentas bancarias mensualmente",desc:"No revisar movimientos bancarios contra contabilidad.",wrong:"Dejar partidas sin cuadrar.",correct:"Conciliar bancaria mensualmente. Revisar extractos y asientos.",impact:"Alta",profile:"todos"},
+{title:"Amortizar antes de dar de alta el inmovilizado",desc:"Dotar amortización antes de contabilizar el activo.",wrong:"Amortizar un activo que no aparece en balance.",correct:"Primero alta del activo (grupo 21), luego amortización.",impact:"Alta",profile:"todos"},
+{title:"No registrar factura rectificativa correctamente",desc:"No ajustar compras/ventas al emitir o recibir rectificativa.",wrong:"Solo ajustar el IVA sin modificar la base.",correct:"Registrar la rectificativa completa: base, IVA y proveedor/cliente.",impact:"Media",profile:"todos"},
+{title:"Mezclar gastos personal empresa y autónomo",desc:"Contabilizar gastos personales del autónomo como de empresa.",wrong:"Pasar gastos familiares por la empresa.",correct:"Solo gastos deducibles según normativa fiscal.",impact:"Alta",profile:"autonomo"},
+{title:"No revisar plazos de prescripción",desc:"Olvidar que las deudas y créditos prescriben.",wrong:"Mantener deudas antiguas sin regularizar.",correct:"Plazos: 4 años (tributos), 5 años (civil). Regularizar.",impact:"Media",profile:"profesional"},
+{title:"Error tipo IVA en operaciones mixtas",desc:"Aplicar un solo tipo de IVA a facturas con varios tipos.",wrong:"Todo al 21% sin separar tipos.",correct:"Separar líneas por tipo de IVA. Aplicar prorrata si es necesario.",impact:"Alta",profile:"todos"},
+{title:"No regularizar existencias al cierre",desc:"Omitir la regularización de stocks al cierre del ejercicio.",wrong:"Mantener stocks sin ajustar a valor neto.",correct:"Regularizar obligatoriamente. Art. 38 Ley Sociedades Capital.",impact:"Alta",profile:"todos"},
+{title:"Olvidar provisiones obligatorias",desc:"No dotar provisiones que la ley exige.",wrong:"No dotar provisión por pensiones o garantías.",correct:"Dotar prov. pensiones, garantías, riesgos y contratos onerosos.",impact:"Alta",profile:"profesional"},
+{title:"No hacer conciliación fiscal anual",desc:"No revisar la coherencia entre contabilidad y declaraciones.",wrong:"Enviar declaraciones sin cuadrar con la contabilidad.",correct:"Hacer conciliación fiscal anual antes de presentar modelos.",impact:"Alta",profile:"profesional"},
+{title:"Olvidar modelo 390 resumen anual IVA",desc:"No presentar el resumen anual de IVA.",wrong:"Solo presentar trimestrales.",correct:"Presentar modelo 390 en enero-febrero. Es obligatorio.",impact:"Media",profile:"todos"},
+{title:"No contabilizar IVA en facturas rectificativas de clientes",desc:"Al emitir factura rectificativa, olvidar ajustar el IVA repercutido.",wrong:"Solo ajustar la cuenta de clientes.",correct:"Regularizar 4770 (IVA repercutido) y clientes (4300).",impact:"Alta",profile:"todos"},
+{title:"Error en prorrata de IVA para actividades mixtas",desc:"No aplicar correctamente la prorrata de IVA.",wrong:"Deducir 100% del IVA con actividad exenta.",correct:"Calcular prorrata: (op. gravadas / op. totales) × IVA soportado.",impact:"Alta",profile:"autonomo"}
+];
+
+// ========================================================================
+// APP STATE & NAVIGATION
+// ========================================================================
+let currentView='home';
+let wizardState={};
+let calYear=new Date().getFullYear();
+let calMonth=new Date().getMonth();
+
+// Theme
+function initTheme(){
+    const saved=localStorage.getItem('pgc-theme');
+    if(saved){document.documentElement.setAttribute('data-theme',saved);}
+    else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches){document.documentElement.setAttribute('data-theme','dark');}
+    updateThemeIcon();
+}
+function toggleTheme(){
+    const t=document.documentElement.getAttribute('data-theme');
+    const next=t==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    localStorage.setItem('pgc-theme',next);
+    updateThemeIcon();
+}
+function updateThemeIcon(){
+    const t=document.documentElement.getAttribute('data-theme');
+    document.getElementById('theme-btn').textContent=t==='dark'?'☀️':'🌙';
+}
+
+// Profile
+function initProfile(){
+    if(!localStorage.getItem('pgc-profile')){
+        document.getElementById('profile-modal').classList.add('show');
+    } else {
+        applyProfile(localStorage.getItem('pgc-profile'));
+    }
+}
+function selectProfile(p){
+    localStorage.setItem('pgc-profile',p);
+    document.getElementById('profile-modal').classList.remove('show');
+    applyProfile(p);
+}
+function skipProfile(){
+    localStorage.setItem('pgc-profile','profesional');
+    document.getElementById('profile-modal').classList.remove('show');
+    applyProfile('profesional');
+}
+function showProfileModal(){document.getElementById('profile-modal').classList.add('show');}
+function applyProfile(p){
+    const icons={estudiante:'🎓',profesional:'💼',autonomo:'🏪'};
+    const labels={estudiante:'Estudiante',profesional:'Profesional',autonomo:'Autónomo'};
+    document.getElementById('profile-icon').textContent=icons[p]||'🎓';
+    document.getElementById('profile-label').textContent=labels[p]||'Estudiante';
+}
+
+function navigateTo(view){
+    currentView=view;
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    const el=document.getElementById('view-'+view);
+    if(el){el.classList.add('active');el.classList.add('fade-in');}
+    const nav=document.querySelector(`.nav-item[data-view="${view}"]`);
+    if(nav)nav.classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    window.scrollTo(0,0);
+    if(view==='wizard')initWizard();
+    if(view==='operations')renderOperations();
+    if(view==='errors')renderErrors();
+    if(view==='catalog')renderCatalog();
+    if(view==='invoices')initInvoice();
+    if(view==='calendar')renderCalendar();
+}
+document.querySelectorAll('.nav-item[data-view]').forEach(item=>{item.addEventListener('click',()=>navigateTo(item.dataset.view));});
+
+// Tabs
+function switchTab(group,tab,btn){
+    const parent=btn.closest('.view')||btn.closest('#content');
+    parent.querySelectorAll('.tab-btn').forEach(b=>{if(b.closest('.tabs')===btn.closest('.tabs'))b.classList.remove('active');});
+    btn.classList.add('active');
+    parent.querySelectorAll('.tab-content').forEach(tc=>{if(tc.id.startsWith(group+'-'))tc.classList.remove('active');});
+    const tc=document.getElementById(group+'-'+tab);
+    if(tc)tc.classList.add('active');
+}
+
+// Scroll to top
+window.addEventListener('scroll',()=>{
+    const b=document.getElementById('scroll-top');
+    if(window.scrollY>300)b.classList.add('show');else b.classList.remove('show');
+});
+
+// ========================================================================
+// SEARCH
+// ========================================================================
+const searchInput=document.getElementById('search-input');
+const searchResults=document.getElementById('search-results');
+let allAccounts=[];
+PGC_GROUPS.forEach(g=>{g.subgroups.forEach(sg=>{if(sg.accounts){sg.accounts.forEach(a=>{allAccounts.push({...a,groupName:g.name,groupNum:g.num,sgName:sg.name,sgNum:sg.num});});}});});
+searchInput.addEventListener('input',function(){
+    const q=this.value.toLowerCase().trim();
+    if(q.length<2){searchResults.classList.remove('show');return;}
+    const matches=allAccounts.filter(a=>a.n.includes(q)||a.name.toLowerCase().includes(q)||(a.desc&&a.desc.toLowerCase().includes(q))).slice(0,15);
+    if(matches.length===0){searchResults.innerHTML='<div class="search-result-item"><span style="color:var(--text-secondary)">No se encontraron resultados</span></div>';}
+    else{searchResults.innerHTML=matches.map(a=>`<div class="search-result-item" onclick="showAccountDetail('${a.n}')"><span class="sr-num">${a.n}</span><div><div class="sr-name">${a.name}</div><div class="sr-type">Grupo ${a.groupNum} — ${a.sgName}</div></div></div>`).join('');}
+    searchResults.classList.add('show');
+});
+searchInput.addEventListener('blur',()=>setTimeout(()=>searchResults.classList.remove('show'),200));
+searchInput.addEventListener('focus',function(){if(this.value.length>=2)this.dispatchEvent(new Event('input'));});
+function showAccountDetail(num){
+    searchResults.classList.remove('show');
+    navigateTo('catalog');
+    setTimeout(()=>{
+        const acc=allAccounts.find(a=>a.n===num);
+        if(!acc)return;
+        const detail=document.getElementById('account-detail');
+        const typeTag=acc.groupNum<=3||acc.groupNum===4?(acc.groupNum<=3?'tag-asset':'tag-liability'):(acc.groupNum==='6'||acc.groupNum==='7'?(acc.groupNum==='6'?'tag-expense':'tag-income'):'tag-equity');
+        const typeLabel=acc.groupNum<=3?'Activo':acc.groupNum==='4'?'Pasivo':acc.groupNum==='6'?'Gasto':acc.groupNum==='7'?'Ingreso':'Fondos Propios';
+        const normalBal=acc.groupNum<=3||acc.groupNum==='6'?'Debe':'Haber';
+        detail.style.display='block';
+        detail.innerHTML=`<div class="card account-detail fade-in" style="margin-top:16px;"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;"><div><h3>${acc.n} — ${acc.name}</h3><div class="meta" style="margin-top:8px;"><span class="tag ${typeTag}">${typeLabel}</span><span class="badge badge-info">Grupo ${acc.groupNum} — ${acc.groupName}</span></div></div><button class="btn btn-outline btn-sm" onclick="document.getElementById('account-detail').style.display='none'">✕ Cerrar</button></div>${acc.desc?`<p style="margin-top:8px;color:var(--text-secondary);font-size:14px;">${acc.desc}</p>`:''}<div style="margin-top:16px;"><strong>Regla:</strong> ${normalBal==='Debe'?'Aumento en <span class="amount-debe"><strong>DEBE</strong></span> / Disminución en <span class="amount-haber"><strong>HABER</strong></span>':'Aumento en <span class="amount-haber"><strong>HABER</strong></span> / Disminución en <span class="amount-debe"><strong>DEBE</strong></span>'}</div></div>`;
+        detail.scrollIntoView({behavior:'smooth',block:'start'});
+    },100);
+}
+
+// ========================================================================
+// CATALOG
+// ========================================================================
+function renderCatalog(){
+    const tree=document.getElementById('account-tree');
+    tree.innerHTML=PGC_GROUPS.map(g=>`<li><div class="group-header" onclick="toggleGroup(this,'${g.num}')"><span class="arrow">▶</span><span class="tag tag-${g.type==='Activo'?'asset':g.type==='Pasivo'||g.type==='Pasivo / Neto'?'liability':g.type==='Gasto'?'expense':g.type==='Ingreso'?'income':'equity'}" style="font-size:11px;">${g.type}</span><strong>${g.num}</strong> — ${g.name}<span style="margin-left:auto;font-size:12px;color:var(--text-secondary);">Normal: ${g.normal}</span></div><ul class="subgroup-list" id="sg-${g.num}">${g.subgroups.map(sg=>`<li><div class="subgroup-item" style="font-weight:600;color:var(--text-secondary);margin-top:4px;">${sg.num} — ${sg.name}</div>${sg.accounts?sg.accounts.map(a=>`<div class="subgroup-item" style="padding-left:20px;cursor:pointer;" onclick="showAccountDetail('${a.n}')"><strong>${a.n}</strong> — ${a.name}</div>`).join(''):''}</li>`).join('')}</ul></li>`).join('');
+}
+function toggleGroup(el,num){el.classList.toggle('open');document.getElementById('sg-'+num).classList.toggle('show');}
+
+// ========================================================================
+// WIZARD
+// ========================================================================
+const WIZARD_TYPES=[
+{id:"compra-merc",icon:"🛒",label:"Compra mercaderías"},
+{id:"compra-serv",icon:"💼",label:"Compra servicios"},
+{id:"compra-material",icon:"🖥️",label:"Compra material"},
+{id:"venta-merc",icon:"💰",label:"Venta mercaderías"},
+{id:"venta-serv",icon:"🔧",label:"Prestación servicios"},
+{id:"nomina",icon:"👥",label:"Nómina empleados"},
+{id:"pago-prov",icon:"🏦",label:"Pago proveedor"},
+{id:"cobro-cli",icon:"💵",label:"Cobro cliente"},
+{id:"prestamo",icon:"🏛️",label:"Préstamo bancario"},
+{id:"amort-material",icon:"📉",label:"Amortización material"},
+{id:"amort-intangible",icon:"💻",label:"Amortización intangible"},
+{id:"pago-iva",icon:"💶",label:"Liquidación IVA"},
+{id:"otro",icon:"📝",label:"Otra operación"}
+];
+function initWizard(){wizardState={step:1,type:null,base:0,iva:21,retencion:0};renderWizardStep();}
+function renderWizardStep(){
+    const c=document.getElementById('wizard-container');
+    const s=wizardState.step;
+    const progress=[1,2,3,4].map(i=>`<div class="step-dot ${i<s?'done':i===s?'active':''}"></div>`).join('');
+    let html=`<div class="wizard-progress">${progress}</div>`;
+    if(s===1){
+        html+=`<div class="wizard-step fade-in"><h3>📋 Paso 1: ¿Qué tipo de operación?</h3><div class="option-grid">${WIZARD_TYPES.map(t=>`<div class="option-card ${wizardState.type===t.id?'selected':''}" onclick="selectWizardType('${t.id}')"><div class="opt-icon">${t.icon}</div><div class="opt-label">${t.label}</div></div>`).join('')}</div></div>`;
+    }else if(s===2){
+        const needIva=['compra-merc','compra-serv','compra-material','venta-merc','venta-serv'].includes(wizardState.type);
+        const needRet=['compra-serv'].includes(wizardState.type);
+        html+=`<div class="wizard-step fade-in"><h3>💰 Paso 2: Importes</h3><div class="form-group"><label>Base imponible (€)</label><input type="number" id="wiz-base" value="${wizardState.base||''}" placeholder="Ej: 1000" oninput="wizardState.base=parseFloat(this.value)||0"></div>${needIva?`<div class="form-group"><label>Tipo de IVA (%)</label><select id="wiz-iva" onchange="wizardState.iva=parseFloat(this.value)"><option value="21" ${wizardState.iva===21?'selected':''}>21%</option><option value="10" ${wizardState.iva===10?'selected':''}>10%</option><option value="4" ${wizardState.iva===4?'selected':''}>4%</option><option value="0" ${wizardState.iva===0?'selected':''}>0%</option></select></div>`:''}${needRet?`<div class="form-group"><label>¿Retención IRPF?</label><select id="wiz-ret" onchange="wizardState.retencion=parseFloat(this.value)"><option value="0" ${wizardState.retencion===0?'selected':''}>No</option><option value="19" ${wizardState.retencion===19?'selected':''}>19%</option><option value="21" ${wizardState.retencion===21?'selected':''}>21%</option><option value="24" ${wizardState.retencion===24?'selected':''}>24%</option></select></div>`:''}<div class="wizard-actions"><button class="btn btn-outline" onclick="wizardState.step=1;renderWizardStep()">← Atrás</button><button class="btn btn-primary" onclick="wizardState.step=3;renderWizardStep()">Siguiente →</button></div></div>`;
+    }else if(s===3){
+        const entry=generateWizardEntry();
+        html+=`<div class="wizard-step fade-in"><h3>📝 Paso 3: Asiento resultante</h3><table class="entry-result"><thead><tr><th>Cuenta</th><th>Concepto</th><th>Debe</th><th>Haber</th></tr></thead><tbody>${entry.lines.map(l=>`<tr><td><strong>${l.acc}</strong></td><td>${l.desc}</td><td class="amount ${l.type==='D'?'amount-debe':''}">${l.type==='D'?formatEUR(l.amount):''}</td><td class="amount ${l.type==='C'?'amount-haber':''}">${l.type==='C'?formatEUR(l.amount):''}</td></tr>`).join('')}<tr class="entry-total"><td colspan="2"><strong>TOTALES</strong></td><td class="amount amount-debe"><strong>${formatEUR(entry.totalDebit)}</strong></td><td class="amount amount-haber"><strong>${formatEUR(entry.totalCredit)}</strong></td></tr></tbody></table><div class="tip-box"><strong>💡 ¿Por qué?</strong> ${entry.why}</div>${entry.tip?`<div class="info-box"><strong>⚠️ Recomendación:</strong> ${entry.tip}</div>`:''}<div class="wizard-actions"><button class="btn btn-outline" onclick="wizardState.step=2;renderWizardStep()">← Atrás</button><div><button class="btn btn-outline" onclick="window.print()" style="margin-right:8px;">🖨️ Imprimir</button><button class="btn btn-primary" onclick="wizardState.step=4;renderWizardStep()">✔ Finalizar</button></div></div></div>`;
+    }else if(s===4){
+        html+=`<div class="wizard-step fade-in" style="text-align:center;"><div style="font-size:64px;margin-bottom:16px;">✅</div><h3 style="justify-content:center;">Asiento registrado correctamente</h3><p style="color:var(--text-secondary);margin:12px 0;">Verifica los datos antes de contabilizar.</p><div style="margin-top:20px;"><button class="btn btn-primary btn-lg" onclick="initWizard()">🔄 Crear otro</button><button class="btn btn-outline btn-lg" style="margin-left:8px;" onclick="navigateTo('operations')">📋 Ver operaciones</button></div></div>`;
+    }
+    c.innerHTML=html;
+}
+function selectWizardType(id){wizardState.type=id;wizardState.step=2;renderWizardStep();}
+function generateWizardEntry(){
+    const t=wizardState.type,b=wizardState.base||0,iv=(b*(wizardState.iva||0))/100,ret=(b*(wizardState.retencion||0))/100,total=b+iv-ret;
+    let lines=[],why='',tip='';
+    switch(t){
+        case'compra-merc':lines=[{acc:"6000",desc:"Compras mercaderías",type:"D",amount:b},...(wizardState.iva>0?[{acc:"4720",desc:"IVA Soportado",type:"D",amount:iv}]:[]),{acc:"4000",desc:"Proveedores",type:"C",amount:b+iv}];why="Compras es gasto → debita. IVA → debita. Proveedores → acreeda.";tip="Solo deduces IVA con factura completa.";break;
+        case'compra-serv':lines=[{acc:"6220",desc:"Servicios profesionales",type:"D",amount:b},...(wizardState.iva>0?[{acc:"4720",desc:"IVA Soportado",type:"D",amount:iv}]:[]),...(wizardState.retencion>0?[{acc:"4751",desc:"Retenciones IRPF",type:"D",amount:ret}]:[]),{acc:"4102",desc:"Acreedores servicios prof.",type:"C",amount:total}];why="Servicios profesionales es gasto → debita. Retención se ingresa a Hacienda.";break;
+        case'compra-material':lines=[{acc:"2170",desc:"Equipos procesos información",type:"D",amount:b},...(wizardState.iva>0?[{acc:"4720",desc:"IVA Soportado",type:"D",amount:iv}]:[]),{acc:"4000",desc:"Proveedores",type:"C",amount:b+iv}];why="Inmovilizado es activo → debita. Proveedores → acreeda.";break;
+        case'venta-merc':lines=[{acc:"4300",desc:"Clientes",type:"D",amount:b+iv},{acc:"7000",desc:"Ventas mercaderías",type:"C",amount:b},...(wizardState.iva>0?[{acc:"4770",desc:"IVA Repercutido",type:"C",amount:iv}]:[])];why="Clientes es activo → debita. Ventas es ingreso → acreeda. IVA repercutido → pasivo.";break;
+        case'venta-serv':lines=[{acc:"4300",desc:"Clientes",type:"D",amount:b+iv},{acc:"7200",desc:"Servicios vendidos",type:"C",amount:b},...(wizardState.iva>0?[{acc:"4770",desc:"IVA Repercutido",type:"C",amount:iv}]:[])];why="Clientes → debita. Servicios vendidos → acreeda. IVA repercutido → acreeda.";break;
+        case'nomina':const ssE=b*0.236,irpf=b*0.15,ssO=b*0.0635,nb=b-irpf-ssO;lines=[{acc:"6500",desc:"Sueldos y salarios",type:"D",amount:b},{acc:"6520",desc:"SS empresa",type:"D",amount:ssE},{acc:"4710",desc:"Retenciones IRPF",type:"C",amount:irpf},{acc:"4710",desc:"SS cuota obrero",type:"C",amount:ssO},{acc:"4100",desc:"Acreedores varios",type:"C",amount:nb},{acc:"4710",desc:"SS cuota empresario",type:"C",amount:ssE}];why="Sueldos y SS empresa → gastos. Retenciones y SS obrero → pasivo. Neto al trabajador.";break;
+        case'pago-prov':lines=[{acc:"4000",desc:"Proveedores",type:"D",amount:b},{acc:"5720",desc:"Bancos",type:"C",amount:b}];why="Proveedores baja → debita. Bancos baja → acreeda.";break;
+        case'cobro-cli':lines=[{acc:"5720",desc:"Bancos",type:"D",amount:b},{acc:"4300",desc:"Clientes",type:"C",amount:b}];why="Bancos sube → debita. Clientes baja → acreeda.";break;
+        case'prestamo':lines=[{acc:"5720",desc:"Bancos",type:"D",amount:b},{acc:"1700",desc:"Préstamos entidades crédito",type:"C",amount:b}];why="Bancos sube → debita. Préstamo es deuda a lt → acreeda.";break;
+        case'amort-material':lines=[{acc:"6610",desc:"Amort. inmov. material",type:"D",amount:b},{acc:"2810",desc:"Amort. acumulada inmov.",type:"C",amount:b}];why="Amortización es gasto → debita. Acumulada reduce activo → acreeda.";break;
+        case'amort-intangible':lines=[{acc:"6600",desc:"Amort. inmov. intangible",type:"D",amount:b},{acc:"2800",desc:"Amort. acumulada intang.",type:"C",amount:b}];why="Gasto → debita. Acumulada → acreeda.";break;
+        case'pago-iva':lines=[{acc:"4770",desc:"IVA Repercutido",type:"D",amount:b},{acc:"4720",desc:"IVA Soportado",type:"C",amount:b},{acc:"5720",desc:"Bancos",type:"C",amount:0}];why="Liquidar IVA: cancelar repercutido contra soportado.";break;
+        default:lines=[{acc:"????",desc:"Cuenta a definir",type:"D",amount:b},{acc:"????",desc:"Cuenta a definir",type:"C",amount:b}];why="Selecciona las cuentas adecuadas.";break;
+    }
+    const totalDebit=lines.filter(l=>l.type==='D').reduce((s,l)=>s+l.amount,0);
+    const totalCredit=lines.filter(l=>l.type==='C').reduce((s,l)=>s+l.amount,0);
+    return{lines,totalDebit,totalCredit,why,tip};
+}
+
+// ========================================================================
+// OPERATIONS
+// ========================================================================
+function renderOperations(filter='all'){
+    const grid=document.getElementById('operations-grid');
+    const profile=localStorage.getItem('pgc-profile')||'profesional';
+    const filtered=filter==='all'?OPERATIONS:OPERATIONS.filter(o=>o.category===filter);
+    grid.innerHTML=filtered.map(o=>`<div class="op-card" id="op-${o.id}" onclick="toggleOp('${o.id}')"><div class="op-card-header"><span class="op-icon">${o.icon}</span><div><h3>${o.name}</h3><p>${o.desc}</p></div></div><div class="op-card-body"><table><thead><tr><th>Cuenta</th><th>Concepto</th><th>Debe</th><th>Haber</th></tr></thead><tbody>${o.entry.map(e=>`<tr><td><strong>${e.acc}</strong></td><td>${e.desc}</td><td class="amount ${e.type==='D'?'amount-debe':''}">${e.type==='D'?e.amountLabel:''}</td><td class="amount ${e.type==='C'?'amount-haber':''}">${e.type==='C'?e.amountLabel:''}</td></tr>`).join('')}</tbody></table><div class="tip-box"><strong>💡 ¿Por qué?</strong> ${o.why}</div>${o.tip?`<div class="info-box"><strong>⚠️ Recomendación:</strong> ${o.tip}</div>`:''}${o.example?`<div style="margin-top:12px;background:var(--bg);padding:12px;border-radius:8px;"><strong>Ejemplo numérico:</strong><div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;">${o.example.labels.map((l,i)=>`<span><span style="color:var(--text-secondary)">${l}:</span> <strong>${o.example.values[i]}</strong></span>`).join('')}</div></div>`:''}</div></div>`).join('');
+    document.querySelectorAll('.op-filter').forEach(btn=>{btn.onclick=function(){document.querySelectorAll('.op-filter').forEach(b=>b.classList.remove('active'));this.classList.add('active');renderOperations(this.dataset.cat);};});
+}
+function toggleOp(id){document.getElementById('op-'+id).classList.toggle('expanded');}
+
+// ========================================================================
+// INVOICES
+// ========================================================================
+let invoiceLines=[];
+function initInvoice(){
+    invoiceLines=[{desc:'',qty:1,price:0,iva:21}];
+    document.getElementById('fac-fecha').value=new Date().toISOString().split('T')[0];
+    renderInvoiceLines();
+    updateInvoice();
+}
+function renderInvoiceLines(){
+    const c=document.getElementById('fac-lines');
+    c.innerHTML=invoiceLines.map((l,i)=>`<div style="display:grid;grid-template-columns:3fr 1fr 1fr 1fr 40px;gap:8px;margin-bottom:8px;align-items:end;"><div class="form-group"><label>${i===0?'Descripción':''}</label><input type="text" value="${l.desc}" placeholder="Producto/Servicio" oninput="invoiceLines[${i}].desc=this.value;updateInvoice()"></div><div class="form-group"><label>${i===0?'Cantidad':''}</label><input type="number" value="${l.qty}" min="1" oninput="invoiceLines[${i}].qty=parseFloat(this.value)||1;updateInvoice()"></div><div class="form-group"><label>${i===0?'Precio unitario':''}</label><input type="number" value="${l.price}" step="0.01" oninput="invoiceLines[${i}].price=parseFloat(this.value)||0;updateInvoice()"></div><div class="form-group"><label>${i===0?'IVA %':''}</label><select onchange="invoiceLines[${i}].iva=parseFloat(this.value);updateInvoice()"><option value="21" ${l.iva===21?'selected':''}>21%</option><option value="10" ${l.iva===10?'selected':''}>10%</option><option value="4" ${l.iva===4?'selected':''}>4%</option><option value="0" ${l.iva===0?'selected':''}>0%</option></select></div><div style="padding-bottom:4px;"><button class="btn btn-outline btn-sm" onclick="invoiceLines.splice(${i},1);renderInvoiceLines();updateInvoice()" ${invoiceLines.length<=1?'disabled':''} style="padding:4px 8px;">✕</button></div></div>`).join('');
+}
+function addInvoiceLine(){invoiceLines.push({desc:'',qty:1,price:0,iva:21});renderInvoiceLines();updateInvoice();}
+function updateInvoice(){
+    const num=document.getElementById('fac-num').value;
+    const fecha=document.getElementById('fac-fecha').value;
+    const emisor=document.getElementById('fac-emisor').value||'Mi Empresa S.L.';
+    const receptor=document.getElementById('fac-receptor').value||'Cliente S.A.';
+    const retPct=parseFloat(document.getElementById('fac-retencion').value)||0;
+    const tipo=document.getElementById('fac-tipo').value;
+    let html=`<div class="invoice-header"><div><div style="font-size:20px;font-weight:800;color:var(--primary);">${emisor}</div><div style="font-size:12px;color:var(--text-secondary);">Factura ${tipo==='simplificada'?'Simplificada':''}</div></div><div style="text-align:right;"><div style="font-size:24px;font-weight:800;">${num}</div><div style="font-size:13px;color:var(--text-secondary);">${fecha||'Sin fecha'}</div></div></div>`;
+    html+=`<div style="margin-bottom:16px;"><div style="font-size:12px;color:var(--text-secondary);">A:</div><div style="font-weight:700;">${receptor}</div></div>`;
+    html+=`<table style="margin-bottom:16px;"><thead><tr><th>Concepto</th><th style="text-align:right;">Cant.</th><th style="text-align:right;">Precio</th><th style="text-align:right;">IVA</th><th style="text-align:right;">Total</th></tr></thead><tbody>`;
+    let subtotal=0,totalIva=0;
+    invoiceLines.forEach(l=>{
+        const base=l.qty*l.price;
+        const iva=base*l.iva/100;
+        subtotal+=base;totalIva+=iva;
+        html+=`<tr><td>${l.desc||'—'}</td><td style="text-align:right;">${l.qty}</td><td style="text-align:right;">${formatEUR(l.price)}</td><td style="text-align:right;">${l.iva}%</td><td style="text-align:right;font-weight:600;">${formatEUR(base+iva)}</td></tr>`;
+    });
+    html+=`</tbody></table>`;
+    const ret=subtotal*retPct/100;
+    html+=`<div style="text-align:right;font-size:14px;"><div>Subtotal: <strong>${formatEUR(subtotal)}</strong></div><div>IVA: <strong>${formatEUR(totalIva)}</strong></div>`;
+    if(ret>0)html+=`<div>Retención (${retPct}%): <strong style="color:var(--danger);">-${formatEUR(ret)}</strong></div>`;
+    html+=`<div style="font-size:20px;margin-top:8px;border-top:2px solid var(--border);padding-top:8px;">TOTAL: <strong style="color:var(--primary);">${formatEUR(subtotal+totalIva-ret)}</strong></div></div>`;
+    document.getElementById('invoice-preview').innerHTML=html;
+}
+function generateInvoiceEntry(){
+    const subtotal=invoiceLines.reduce((s,l)=>s+l.qty*l.price,0);
+    const totalIva=invoiceLines.reduce((s,l)=>s+l.qty*l.price*l.iva/100,0);
+    const retPct=parseFloat(document.getElementById('fac-retencion').value)||0;
+    const ret=subtotal*retPct/100;
+    const isSale=true;
+    let entryHtml=`<table style="font-size:13px;"><thead><tr><th>Cuenta</th><th>Concepto</th><th>Debe</th><th>Haber</th></tr></thead><tbody>`;
+    if(isSale){
+        entryHtml+=`<tr><td><strong>4300</strong></td><td>Clientes</td><td class="amount amount-debe">${formatEUR(subtotal+totalIva-ret)}</td><td></td></tr>`;
+        entryHtml+=`<tr><td><strong>7000/7200</strong></td><td>Ventas/Servicios</td><td></td><td class="amount amount-haber">${formatEUR(subtotal)}</td></tr>`;
+        entryHtml+=`<tr><td><strong>4770</strong></td><td>IVA Repercutido</td><td></td><td class="amount amount-haber">${formatEUR(totalIva)}</td></tr>`;
+        if(ret>0)entryHtml+=`<tr><td><strong>4751</strong></td><td>Retenciones IRPF</td><td class="amount amount-debe">${formatEUR(ret)}</td><td></td></tr>`;
+    }
+    entryHtml+=`<tr class="entry-total"><td colspan="2"><strong>TOTALES</strong></td><td class="amount amount-debe"><strong>${formatEUR(subtotal+totalIva)}</strong></td><td class="amount amount-haber"><strong>${formatEUR(subtotal+totalIva)}</strong></td></tr></tbody></table>`;
+    document.getElementById('invoice-entry').innerHTML=entryHtml;
+    document.getElementById('invoice-entry-card').style.display='block';
+}
+
+// ========================================================================
+// CALCULATORS
+// ========================================================================
+function calcIVA(){
+    const base=parseFloat(document.getElementById('calc-iva-base').value)||0;
+    const tipo=parseFloat(document.getElementById('calc-iva-tipo').value)||0;
+    const retPct=parseFloat(document.getElementById('calc-iva-ret').value)||0;
+    const iva=base*tipo/100;
+    const ret=base*retPct/100;
+    document.getElementById('calc-iva-monto').textContent=formatEUR(iva);
+    document.getElementById('calc-iva-total').textContent=formatEUR(base+iva);
+    const retRow=document.getElementById('calc-iva-ret-row');
+    if(retPct>0){retRow.style.display='block';document.getElementById('calc-iva-ret-monto').textContent=formatEUR(ret);document.getElementById('calc-iva-ret-total').textContent=formatEUR(base+iva-ret);}
+    else retRow.style.display='none';
+}
+function calcAmort(){
+    const valor=parseFloat(document.getElementById('calc-amort-valor').value)||0;
+    const vida=parseFloat(document.getElementById('calc-amort-vida').value)||1;
+    const metodo=document.getElementById('calc-amort-metodo').value;
+    const residual=parseFloat(document.getElementById('calc-amort-residual').value)||0;
+    const base=valor-residual;
+    let cuota=0,pct=0;
+    document.getElementById('calc-amort-unidades-group').style.display=metodo==='unidades'?'block':'none';
+    document.getElementById('calc-amort-unidades-used-group').style.display=metodo==='unidades'?'block':'none';
+    if(metodo==='lineal'){cuota=base/vida;pct=(100/vida);}
+    else if(metodo==='degresiva'){pct=Math.min((100/vida)*1.5,72);cuota=valor*(pct/100);}
+    else if(metodo==='unidades'){const total=parseFloat(document.getElementById('calc-amort-unidades').value)||1;const usadas=parseFloat(document.getElementById('calc-amort-unidades-usadas').value)||0;pct=usadas/total*100;cuota=base*(usadas/total);}
+    document.getElementById('calc-amort-cuota').textContent=formatEUR(cuota);
+    document.getElementById('calc-amort-pct').textContent=pct.toFixed(2)+'%';
+    let tl='<table style="font-size:13px;margin-top:8px;"><thead><tr><th>Año</th><th>Valor neto inicio</th><th>Cuota</th><th>Valor neto fin</th></tr></thead><tbody>';
+    let vn=valor;
+    for(let i=1;i<=Math.min(vida,10);i++){
+        const c2=metodo==='lineal'?base/vida:vn*(pct/100);
+        const fin=Math.max(vn-c2,residual);
+        tl+=`<tr><td>${i}</td><td>${formatEUR(vn)}</td><td>${formatEUR(c2)}</td><td>${formatEUR(fin)}</td></tr>`;
+        vn=fin;
+    }
+    if(vida>10)tl+=`<tr><td colspan="4" style="text-align:center;color:var(--text-secondary);">... ${vida-10} años más</td></tr>`;
+    tl+='</tbody></table>';
+    document.getElementById('calc-amort-timeline').innerHTML=tl;
+}
+function calcIRPF(){
+    const tipo=document.getElementById('calc-irpf-tipo').value;
+    document.getElementById('calc-irpf-retencion-section').style.display=tipo==='retencion'?'block':'none';
+    document.getElementById('calc-irpf-trimestral-section').style.display=tipo==='trimestral'?'block':'none';
+    if(tipo==='retencion'){
+        const base=parseFloat(document.getElementById('calc-irpf-base-ret').value)||0;
+        const pct=parseFloat(document.getElementById('calc-irpf-pct').value)||0;
+        document.getElementById('calc-irpf-resultado').textContent=formatEUR(base*pct/100);
+    }else{
+        const ing=parseFloat(document.getElementById('calc-irpf-ing-q').value)||0;
+        const gas=parseFloat(document.getElementById('calc-irpf-gas-q').value)||0;
+        const autoCuota=parseFloat(document.getElementById('calc-irpf-auto-q').value)||0;
+        const method=document.getElementById('calc-irpf-method-q').value;
+        const base=method==='reducido'?ing*0.07:(ing-gas-autoCuota);
+        document.getElementById('calc-irpf-resultado').textContent=formatEUR(Math.max(base*0.20,0));
+    }
+}
+function calcNomina(){
+    const bruto=parseFloat(document.getElementById('calc-nom-bruto').value)||0;
+    const pagas=parseInt(document.getElementById('calc-nom-periodo').value)||12;
+    const mensual=bruto/pagas;
+    const irpf=mensual*0.15;
+    const ss=mensual*0.0635;
+    const neto=mensual-irpf-ss;
+    document.getElementById('calc-nom-bruto-m').textContent=formatEUR(mensual);
+    document.getElementById('calc-nom-irpf').textContent=formatEUR(irpf);
+    document.getElementById('calc-nom-ss').textContent=formatEUR(ss);
+    document.getElementById('calc-nom-neto').textContent=formatEUR(neto);
+}
+function calcCosteLab(){
+    const bruto=parseFloat(document.getElementById('calc-cl-bruto').value)||0;
+    const ssE=bruto*0.236;
+    const otros=bruto*0.02;
+    document.getElementById('calc-cl-bruto2').textContent=formatEUR(bruto);
+    document.getElementById('calc-cl-ss').textContent=formatEUR(ssE);
+    document.getElementById('calc-cl-otros').textContent=formatEUR(otros);
+    document.getElementById('calc-cl-total').textContent=formatEUR(bruto+ssE+otros);
+}
+function calcBEP(){
+    const fijos=parseFloat(document.getElementById('calc-bep-fijos').value)||0;
+    const precio=parseFloat(document.getElementById('calc-bep-precio').value)||0;
+    const variable=parseFloat(document.getElementById('calc-bep-variable').value)||0;
+    const margen=precio-variable;
+    if(margen>0){
+        const unidades=Math.ceil(fijos/margen);
+        document.getElementById('calc-bep-unidades').textContent=unidades.toLocaleString('es-ES');
+        document.getElementById('calc-bep-ingresos').textContent=formatEUR(unidades*precio);
+        document.getElementById('calc-bep-margen').textContent=formatEUR(margen);
+    }else{
+        document.getElementById('calc-bep-unidades').textContent='—';
+        document.getElementById('calc-bep-ingresos').textContent='0,00 €';
+        document.getElementById('calc-bep-margen').textContent='0,00 €';
+    }
+}
+function calcMargen(){
+    const venta=parseFloat(document.getElementById('calc-marg-venta').value)||0;
+    const coste=parseFloat(document.getElementById('calc-marg-coste').value)||0;
+    const margen=venta-coste;
+    const markup=venta>0?(coste/venta)*100:0;
+    document.getElementById('calc-marg-bruto').textContent=formatEUR(margen);
+    document.getElementById('calc-marg-bruto-pct').textContent=venta>0?((margen/venta)*100).toFixed(1)+'%':'0%';
+    document.getElementById('calc-marg-markup').textContent=formatEUR(margen);
+    document.getElementById('calc-marg-markup-pct').textContent=coste>0?((margen/coste)*100).toFixed(1)+'%':'0%';
+    document.getElementById('calc-marg-divisor').textContent=venta>0?(coste/venta).toFixed(2):'0,00';
+}
+function calcModelo303(){
+    const baseV=parseFloat(document.getElementById('tax-303-base-v').value)||0;
+    const tipoV=parseFloat(document.getElementById('tax-303-tipo-v').value)||21;
+    const baseC=parseFloat(document.getElementById('tax-303-base-c').value)||0;
+    const tipoC=parseFloat(document.getElementById('tax-303-tipo-c').value)||21;
+    const ivaV=baseV*tipoV/100;
+    const ivaC=baseC*tipoC/100;
+    document.getElementById('tax-303-iva-v').textContent=formatEUR(ivaV);
+    document.getElementById('tax-303-iva-c').textContent=formatEUR(ivaC);
+    const res=ivaV-ivaC;
+    document.getElementById('tax-303-resultado').textContent=formatEUR(Math.abs(res));
+    document.getElementById('tax-303-label').textContent=res>=0?'Cuota a ingresar:':'A tu favor:';
+    document.getElementById('tax-303-resultado').style.color=res>=0?'var(--primary)':'var(--success)';
+}
+function calcModelo111(){
+    const trab=parseFloat(document.getElementById('tax-111-trab').value)||0;
+    const prof=parseFloat(document.getElementById('tax-111-prof').value)||0;
+    const otros=parseFloat(document.getElementById('tax-111-otros').value)||0;
+    document.getElementById('tax-111-resultado').textContent=formatEUR(trab+prof+otros);
+}
+function calcIS(){
+    const base=parseFloat(document.getElementById('tax-is-base').value)||0;
+    const tipo=parseFloat(document.getElementById('tax-is-tipo').value)||25;
+    const ded=parseFloat(document.getElementById('tax-is-deducciones').value)||0;
+    const cuota=Math.max(base*tipo/100-ded,0);
+    document.getElementById('tax-is-resultado').textContent=formatEUR(cuota);
+}
+function calcIRPFAuto(){
+    const ing=parseFloat(document.getElementById('tax-irpf-ing').value)||0;
+    const gas=parseFloat(document.getElementById('tax-irpf-gas').value)||0;
+    const autoC=parseFloat(document.getElementById('tax-irpf-auto-cuota').value)||0;
+    const metodo=document.getElementById('tax-irpf-metodo').value;
+    const base=metodo==='reducido'?ing*0.07:(ing-gas-autoC);
+    document.getElementById('tax-irpf-base').textContent=formatEUR(base);
+    document.getElementById('tax-irpf-resultado').textContent=formatEUR(Math.max(base*0.20,0));
+}
+
+// ========================================================================
+// ERRORS
+// ========================================================================
+function renderErrors(){
+    const list=document.getElementById('errors-list');
+    const profile=localStorage.getItem('pgc-profile')||'profesional';
+    const filtered=COMMON_ERRORS.filter(e=>e.profile==='todos'||e.profile===profile);
+    list.innerHTML=filtered.map((e,i)=>`<div class="card fade-in" style="margin-bottom:12px;"><div class="card-header"><h2 style="font-size:16px;">❌ ${e.title}</h2><span class="badge badge-${e.impact==='Alta'?'debe':'haber'}">Impacto: ${e.impact}</span></div><p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">${e.desc}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"><div style="background:var(--danger-light);padding:10px;border-radius:8px;"><strong style="color:var(--danger);font-size:12px;">❌ MAL:</strong><p style="font-size:13px;margin-top:4px;">${e.wrong}</p></div><div style="background:var(--success-light);padding:10px;border-radius:8px;"><strong style="color:var(--success);font-size:12px;">✅ BIEN:</strong><p style="font-size:13px;margin-top:4px;">${e.correct}</p></div></div></div>`).join('');
+}
+
+// ========================================================================
+// CALENDAR
+// ========================================================================
+const FISCAL_EVENTS={
+    1:[{d:1,m:"Cierre ejercicio anterior"},{d:20,m:"Modelo 303 cierre + anual IVA"},{d:30,m:"Modelo 303 Q4 IRPF"}],
+    2:[{d:28,m:"Modelo 190 Declaración informativa"},{d:28,m:"Modelo 390 Resumen anual IVA"}],
+    3:[{d:1,m:"Inicio plazo Declaración Renta (previa)"},{d:31,m:"Cierre trimestre Q1"}],
+    4:[{d:1,m:"Modelo 303 Q1 IVA"},{d:1,m:"Modelo 111 Q1 IRPF"},{d:1,m:"Modelo 130 Q1 IRPF autónomos"},{d:20,m:"Plazo pago Q1 IVA/IRPF"}],
+    5:[{d:1,m:"Declaración de la Renta (mayo)"},{d:30,m:"Presentación Declaración Renta"}],
+    6:[{d:1,m:"Modelo 130 Q2 (si anterior)"},{d:30,m:"Cierre Q2"}],
+    7:[{d:1,m:"Modelo 303 Q2 IVA"},{d:1,m:"Modelo 111 Q2 IRPF"},{d:1,m:"Modelo 130 Q2 IRPF autónomos"},{d:20,m:"Plazo pago Q2 IVA/IRPF"}],
+    8:[{d:31,m:"Cierre Q3"}],
+    9:[{d:30,m:"Cierre Q3"}],
+    10:[{d:1,m:"Modelo 303 Q3 IVA"},{d:1,m:"Modelo 111 Q3 IRPF"},{d:1,m:"Modelo 130 Q3 IRPF autónomos"},{d:20,m:"Plazo pago Q3 IVA/IRPF"}],
+    11:[{d:30,m:"Cierre Q4"}],
+    12:[{d:1,m:"Cierre fiscal anticipado"},{d:31,m:"Cierre ejercicio fiscal"}]
+};
+function renderCalendar(){
+    const months=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    document.getElementById('cal-month-title').textContent=months[calMonth]+' '+calYear;
+    const firstDay=new Date(calYear,calMonth,1).getDay();
+    const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+    const today=new Date();
+    const events=FISCAL_EVENTS[calMonth+1]||[];
+    let html='';
+    const dayNames=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+    dayNames.forEach(d=>{html+=`<div class="cal-header">${d}</div>`;});
+    const offset=firstDay===0?6:firstDay-1;
+    for(let i=0;i<offset;i++)html+=`<div class="cal-day"></div>`;
+    for(let d=1;d<=daysInMonth;d++){
+        const hasEvent=events.some(e=>e.d===d);
+        const isToday=d===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear();
+        html+=`<div class="cal-day ${hasEvent?'has-event':''} ${isToday?'today':''}" ${hasEvent?`title="${events.filter(e=>e.d===d).map(e=>e.m).join('; ')}"`:''}>${d}</div>`;
+    }
+    document.getElementById('cal-grid').innerHTML=html;
+    let eventsHtml='';
+    if(events.length===0){eventsHtml='<p style="color:var(--text-secondary);font-size:14px;">No hay obligaciones fiscales este mes.</p>';}
+    else{events.forEach(e=>{eventsHtml+=`<div style="display:flex;gap:12px;align-items:center;padding:10px;border-bottom:1px solid var(--border);"><div style="background:var(--danger-light);color:var(--danger);font-weight:800;width:40px;text-align:center;border-radius:8px;padding:4px 0;">${e.d}</div><div style="font-size:14px;">${e.m}</div></div>`;});}
+    document.getElementById('cal-events-list').innerHTML=eventsHtml;
+}
+function changeCalMonth(delta){calMonth+=delta;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calToday(){calYear=new Date().getFullYear();calMonth=new Date().getMonth();renderCalendar();}
+
+// ========================================================================
+// UTILITIES
+// ========================================================================
+function formatEUR(n){return n.toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
+
+// ========================================================================
+// INIT
+// ========================================================================
+initTheme();
+initProfile();
+renderCatalog();
+updateInvoice();
+calcAmort();
+</script>
+</body>
+</html>
