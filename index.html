@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía PGC — Plan General de Contabilidad</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-light: #e8f0fe;
+            --primary-dark: #1557b0;
+            --success: #0d904f;
+            --success-light: #e6f4ea;
+            --danger: #c5221f;
+            --danger-light: #fce8e6;
+            --warning: #e37400;
+            --warning-light: #fef7e0;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --sidebar-active: #1a73e8;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --radius: 10px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+        
+        /* SIDEBAR */
+        #sidebar { width: 260px; background: var(--sidebar-bg); color: #e2e8f0; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100; transition: transform 0.3s; }
+        .sidebar-header { padding: 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header h1 { font-size: 18px; font-weight: 700; color: #fff; }
+        .sidebar-header p { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .sidebar-nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer; transition: all 0.15s; color: #cbd5e1; font-size: 14px; border-left: 3px solid transparent; }
+        .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
+        .nav-item.active { background: rgba(26,115,232,0.15); color: #60a5fa; border-left-color: var(--primary); font-weight: 600; }
+        .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
+        .nav-section { padding: 12px 16px 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; font-weight: 600; }
+        
+        /* MAIN CONTENT */
+        #main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        #topbar { background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 50; }
+        #hamburger { display: none; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text); }
+        #search-box { flex: 1; max-width: 500px; position: relative; }
+        #search-box input { width: 100%; padding: 10px 14px 10px 38px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        #search-box input:focus { border-color: var(--primary); }
+        #search-box .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+        #content { padding: 24px; flex: 1; }
+        
+        /* CARDS */
+        .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; }
+        .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .card-header h2 { font-size: 18px; font-weight: 700; }
+        .card-header .badge { font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: 600; }
+        .badge-debe { background: var(--danger-light); color: var(--danger); }
+        .badge-haber { background: var(--success-light); color: var(--success); }
+        .badge-info { background: var(--primary-light); color: var(--primary); }
+        
+        /* GRID */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        
+        /* STAT CARDS */
+        .stat-card { background: var(--card); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); cursor: pointer; transition: all 0.2s; border: 2px solid transparent; }
+        .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--primary); }
+        .stat-card .stat-icon { font-size: 28px; margin-bottom: 8px; }
+        .stat-card .stat-value { font-size: 22px; font-weight: 800; color: var(--primary); }
+        .stat-card .stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { text-align: left; padding: 10px 12px; background: var(--bg); font-weight: 600; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid var(--border); }
+        td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        tr:hover td { background: #f8fafc; }
+        .amount { font-family: 'SF Mono', 'Consolas', monospace; font-weight: 600; }
+        .amount-debe { color: var(--danger); }
+        .amount-haber { color: var(--success); }
+        
+        /* BUTTONS */
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-success { background: var(--success); color: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn-lg { padding: 12px 24px; font-size: 16px; }
+        
+        /* TAGS */
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .tag-asset { background: #dbeafe; color: #1e40af; }
+        .tag-liability { background: #fce7f3; color: #9d174d; }
+        .tag-equity { background: #ede9fe; color: #5b21b6; }
+        .tag-expense { background: #fee2e2; color: #991b1b; }
+        .tag-income { background: #d1fae5; color: #065f46; }
+        
+        /* WIZARD */
+        .wizard-container { max-width: 700px; margin: 0 auto; }
+        .wizard-step { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow-md); padding: 28px; margin-bottom: 20px; }
+        .wizard-step h3 { font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .wizard-progress { display: flex; gap: 4px; margin-bottom: 24px; }
+        .wizard-progress .step-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--border); }
+        .wizard-progress .step-dot.active { background: var(--primary); }
+        .wizard-progress .step-dot.done { background: var(--success); }
+        .option-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+        .option-card { padding: 14px; border: 2px solid var(--border); border-radius: 10px; cursor: pointer; transition: all 0.15s; text-align: center; }
+        .option-card:hover { border-color: var(--primary); background: var(--primary-light); }
+        .option-card.selected { border-color: var(--primary); background: var(--primary-light); }
+        .option-card .opt-icon { font-size: 28px; margin-bottom: 6px; }
+        .option-card .opt-label { font-size: 13px; font-weight: 600; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+        .wizard-actions { display: flex; justify-content: space-between; margin-top: 20px; }
+        
+        /* ENTRY RESULT */
+        .entry-result { border: 2px solid var(--success); border-radius: var(--radius); overflow: hidden; }
+        .entry-result th { background: var(--success); color: #fff; }
+        .entry-result tr:hover td { background: #f0fdf4; }
+        .entry-total td { font-weight: 700; background: #f8fafc !important; border-top: 2px solid var(--success); }
+        
+        /* ACCOUNT TREE */
+        .account-tree { list-style: none; }
+        .account-tree li { padding: 6px 0; }
+        .account-tree .group-header { font-weight: 700; cursor: pointer; padding: 10px 12px; border-radius: 8px; transition: background 0.15s; display: flex; align-items: center; gap: 8px; }
+        .account-tree .group-header:hover { background: var(--primary-light); }
+        .account-tree .group-header .arrow { transition: transform 0.2s; font-size: 12px; }
+        .account-tree .group-header.open .arrow { transform: rotate(90deg); }
+        .account-tree .subgroup-list { list-style: none; padding-left: 28px; display: none; }
+        .account-tree .subgroup-list.show { display: block; }
+        .account-tree .subgroup-item { padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: background 0.15s; }
+        .account-tree .subgroup-item:hover { background: var(--bg); }
+        
+        /* ACCOUNT DETAIL */
+        .account-detail { border-left: 4px solid var(--primary); padding-left: 16px; }
+        .account-detail h3 { font-size: 20px; margin-bottom: 8px; }
+        .account-detail .meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+        
+        /* RULES BOX */
+        .rule-box { padding: 14px 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid; }
+        .rule-box.debe { background: var(--danger-light); border-color: var(--danger); }
+        .rule-box.haber { background: var(--success-light); border-color: var(--success); }
+        .rule-box h4 { font-size: 14px; margin-bottom: 4px; }
+        .rule-box ul { margin-left: 18px; font-size: 13px; }
+        
+        /* OPERATION CARD */
+        .op-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; transition: all 0.2s; cursor: pointer; }
+        .op-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .op-card-header { padding: 16px; display: flex; align-items: center; gap: 12px; }
+        .op-card-header .op-icon { font-size: 32px; }
+        .op-card-header h3 { font-size: 15px; font-weight: 700; }
+        .op-card-header p { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .op-card-body { padding: 0 16px 16px; display: none; }
+        .op-card.expanded .op-card-body { display: block; }
+        
+        /* TIP BOX */
+        .tip-box { padding: 12px 16px; border-radius: 8px; background: var(--warning-light); border-left: 4px solid var(--warning); margin-top: 12px; font-size: 13px; }
+        .tip-box strong { color: var(--warning); }
+        
+        /* ERROR BOX */
+        .error-box { padding: 12px 16px; border-radius: 8px; background: var(--danger-light); border-left: 4px solid var(--danger); margin-top: 12px; font-size: 13px; }
+        .error-box strong { color: var(--danger); }
+        
+        /* SEARCH RESULTS */
+        .search-results { position: absolute; top: 100%; left: 0; right: 0; background: var(--card); border: 1px solid var(--border); border-radius: 0 0 8px 8px; box-shadow: var(--shadow-md); max-height: 400px; overflow-y: auto; z-index: 200; display: none; }
+        .search-results.show { display: block; }
+        .search-result-item { padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; display: flex; align-items: center; gap: 10px; }
+        .search-result-item:hover { background: var(--primary-light); }
+        .search-result-item .sr-num { font-family: 'SF Mono', monospace; font-weight: 700; color: var(--primary); min-width: 60px; }
+        .search-result-item .sr-name { font-size: 13px; }
+        .search-result-item .sr-type { font-size: 11px; color: var(--text-secondary); }
+        
+        /* HOME HERO */
+        .hero { background: linear-gradient(135deg, var(--primary) 0%, #4f46e5 100%); color: #fff; border-radius: var(--radius); padding: 32px; margin-bottom: 24px; }
+        .hero h2 { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+        .hero p { font-size: 15px; opacity: 0.9; line-height: 1.5; }
+        .hero .btn { margin-top: 16px; background: #fff; color: var(--primary); }
+        .hero .btn:hover { background: #f0f0f0; }
+        
+        /* QUICK ACTIONS */
+        .quick-actions { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+        .quick-action { display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); cursor: pointer; transition: all 0.15s; border: 2px solid transparent; }
+        .quick-action:hover { border-color: var(--primary); box-shadow: var(--shadow-md); }
+        .quick-action .qa-icon { font-size: 24px; width: 40px; text-align: center; }
+        .quick-action .qa-text h4 { font-size: 14px; font-weight: 600; }
+        .quick-action .qa-text p { font-size: 12px; color: var(--text-secondary); }
+        
+        /* VIEW TOGGLE */
+        .view { display: none; }
+        .view.active { display: block; }
+        
+        /* PRINT */
+        @media print {
+            #sidebar, #topbar, .btn, .wizard-actions, .no-print { display: none !important; }
+            #main { margin-left: 0; }
+            .card { box-shadow: none; border: 1px solid #ccc; }
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            #sidebar { transform: translateX(-100%); }
+            #sidebar.open { transform: translateX(0); }
+            #main { margin-left: 0; }
+            #hamburger { display: block; }
+            .hero h2 { font-size: 20px; }
+            .grid { grid-template-columns: 1fr; }
+        }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section-title { font-size: 22px; font-weight: 800; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .section-desc { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h1>📊 Guía PGC</h1>
+            <p>Plan General de Contabilidad</p>
+        </div>
+        <div class="sidebar-nav">
+            <div class="nav-section">Principal</div>
+            <div class="nav-item active" data-view="home"><span class="icon">🏠</span> Inicio</div>
+            <div class="nav-item" data-view="catalog"><span class="icon">📚</span> Catálogo Cuentas</div>
+            <div class="nav-section">Herramientas</div>
+            <div class="nav-item" data-view="wizard"><span class="icon">🧮</span> Asistente de Asientos</div>
+            <div class="nav-item" data-view="operations"><span class="icon">📋</span> Operaciones Comunes</div>
+            <div class="nav-section">Referencia</div>
+            <div class="nav-item" data-view="rules"><span class="icon">📏</span> Reglas Debe / Haber</div>
+            <div class="nav-item" data-view="iva"><span class="icon">💶</span> Guía de IVA</div>
+            <div class="nav-item" data-view="errors"><span class="icon">⚠️</span> Errores Comunes</div>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <div id="main">
+        <!-- TOP BAR -->
+        <div id="topbar">
+            <button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+            <div id="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-input" placeholder="Buscar cuenta (ej: 6000, Proveedores, IVA...)" autocomplete="off">
+                <div class="search-results" id="search-results"></div>
+            </div>
+        </div>
+
+        <!-- CONTENT -->
+        <div id="content">
+            <!-- ===== HOME VIEW ===== -->
+            <div class="view active" id="view-home">
+                <div class="hero fade-in">
+                    <h2>Guía del Plan General de Contabilidad</h2>
+                    <p>Herramienta interactiva para contables. Busca cuentas, genera asientos correctos y evita errores fiscales. Basado en el PGC (RD 1514/2007).</p>
+                    <button class="btn btn-lg" onclick="navigateTo('wizard')">🧮 Empezar Asistente</button>
+                </div>
+                <h3 class="section-title">Accesos rápidos</h3>
+                <div class="quick-actions">
+                    <div class="quick-action" onclick="navigateTo('wizard')">
+                        <span class="qa-icon">🧮</span>
+                        <div class="qa-text"><h4>Crear asiento</h4><p>Asistente paso a paso</p></div>
+                    </div>
+                    <div class="quick-action" onclick="navigateTo('catalog')">
+                        <span class="qa-icon">📚</span>
+                        <div class="qa-text"><h4>Buscar cuenta</h4><p>Explora el catálogo PGC</p></div>
+                    </div>
+                    <div class="quick-action" onclick="navigateTo('operations')">
+                        <span class="qa-icon">📋</span>
+                        <div class="qa-text"><h4>Operaciones comunes</h4><p>Plantillas de asientos</p></div>
+                    </div>
+                    <div class="quick-action" onclick="navigateTo('rules')">
+                        <span class="qa-icon">📏</span>
+                        <div class="qa-text"><h4>Reglas Debe/Haber</h4><p>Referencia rápida</p></div>
+                    </div>
+                    <div class="quick-action" onclick="navigateTo('iva')">
+                        <span class="qa-icon">💶</span>
+                        <div class="qa-text"><h4>Guía de IVA</h4><p>Tipo general, reducido, superreducido</p></div>
+                    </div>
+                    <div class="quick-action" onclick="navigateTo('errors')">
+                        <span class="qa-icon">⚠️</span>
+                        <div class="qa-text"><h4>Errores comunes</h4><p>Evita los fallos más frecuentes</p></div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 20px;">
+                    <div class="card-header"><h2>📊 Resumen del PGC</h2></div>
+                    <table>
+                        <thead><tr><th>Grupo</th><th>Nombre</th><th>Tipo</th><th>Normal</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>1</strong></td><td>Financiación básica</td><td><span class="tag tag-liability">Pasivo / Neto</span></td><td>Haber</td></tr>
+                            <tr><td><strong>2</strong></td><td>Activo no corriente</td><td><span class="tag tag-asset">Activo</span></td><td>Debe</td></tr>
+                            <tr><td><strong>3</strong></td><td>Existencias</td><td><span class="tag tag-asset">Activo</span></td><td>Debe</td></tr>
+                            <tr><td><strong>4</strong></td><td>Acreedores y deudas a corto plazo</td><td><span class="tag tag-liability">Pasivo</span></td><td>Haber</td></tr>
+                            <tr><td><strong>5</strong></td><td>Cuentas de socios y administración</td><td><span class="tag tag-equity">Mixto</span></td><td>Variable</td></tr>
+                            <tr><td><strong>6</strong></td><td>Gastos</td><td><span class="tag tag-expense">Gasto</span></td><td>Debe</td></tr>
+                            <tr><td><strong>7</strong></td><td>Ingresos</td><td><span class="tag tag-income">Ingreso</span></td><td>Haber</td></tr>
+                            <tr><td><strong>8</strong></td><td>Gastos e ingresos de ejercicios anteriores</td><td><span class="tag tag-expense">Resultado</span></td><td>Variable</td></tr>
+                            <tr><td><strong>9</strong></td><td>Resultado del ejercicio</td><td><span class="tag tag-income">Resultado</span></td><td>Variable</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== CATALOG VIEW ===== -->
+            <div class="view" id="view-catalog">
+                <h2 class="section-title">📚 Catálogo de Cuentas del PGC</h2>
+                <p class="section-desc">Explora la estructura completa del Plan General de Contabilidad. Haz clic en un grupo para ver sus subgrupos y cuentas.</p>
+                <div class="card">
+                    <ul class="account-tree" id="account-tree"></ul>
+                </div>
+                <div id="account-detail" style="display:none;"></div>
+            </div>
+
+            <!-- ===== WIZARD VIEW ===== -->
+            <div class="view" id="view-wizard">
+                <h2 class="section-title">🧮 Asistente de Asientos Contables</h2>
+                <p class="section-desc">Sigue los pasos para generar el asiento correcto. El asistente te guía y explica por qué se usa cada cuenta.</p>
+                <div class="wizard-container" id="wizard-container"></div>
+            </div>
+
+            <!-- ===== OPERATIONS VIEW ===== -->
+            <div class="view" id="view-operations">
+                <h2 class="section-title">📋 Operaciones Comunes</h2>
+                <p class="section-desc">Plantillas de asientos para las operaciones más frecuentes. Haz clic en una operación para ver el detalle completo.</p>
+                <div style="margin-bottom: 16px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="btn btn-outline btn-sm op-filter active" data-cat="all">Todas</button>
+                    <button class="btn btn-outline btn-sm op-filter" data-cat="compra">Compras</button>
+                    <button class="btn btn-outline btn-sm op-filter" data-cat="venta">Ventas</button>
+                    <button class="btn btn-outline btn-sm op-filter" data-cat="nomina">Nómina</button>
+                    <button class="btn btn-outline btn-sm op-filter" data-cat="financiero">Financiero</button>
+                    <button class="btn btn-outline btn-sm op-filter" data-cat="impuesto">Impuestos</button>
+                    <button class="btn btn-outline btn-sm op-filter" data-cat="otro">Otros</button>
+                </div>
+                <div class="grid" id="operations-grid"></div>
+            </div>
+
+            <!-- ===== RULES VIEW ===== -->
+            <div class="view" id="view-rules">
+                <h2 class="section-title">📏 Reglas del Debe y Haber</h2>
+                <p class="section-desc">Fundamento de la partida doble: toda operación tiene un Debe y un Haber de igual importe.</p>
+                <div class="card">
+                    <h3 style="margin-bottom: 12px;">⚖️ Ecuación Contable</h3>
+                    <div style="background: var(--primary-light); padding: 16px; border-radius: 8px; text-align: center; font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 16px;">
+                        ACTIVO = PASIVO + FONDOS PROPIOS
+                    </div>
+                    <p style="font-size: 14px; line-height: 1.7; color: var(--text-secondary);">
+                        Cada transacción afecta a al menos <strong>dos cuentas</strong>. El importe total del <strong>Debe</strong> siempre debe ser igual al importe total del <strong>Haber</strong>. Esta es la base del sistema de partida doble.
+                    </p>
+                </div>
+                <div class="grid" style="margin-top: 16px;">
+                    <div class="rule-box debe">
+                        <h4>🔴 CUÁNDO SE DEBITA (Debe)</h4>
+                        <ul>
+                            <li><strong>Activos</strong> (Grupos 2, 3): cuando <em>aumentan</em></li>
+                            <li><strong>Gastos</strong> (Grupo 6): cuando se <em>incurren</em></li>
+                            <li><strong>Pasivos</strong> (Grupos 1, 4): cuando <em>disminuyen</em></li>
+                            <li><strong>Ingresos</strong> (Grupo 7): en <em>devoluciones</em></li>
+                            <li><strong>Fondos propios</strong>: cuando <em>disminuyen</em></li>
+                        </ul>
+                    </div>
+                    <div class="rule-box haber">
+                        <h4>🟢 CUÁNDO SE ACREEDA (Haber)</h4>
+                        <ul>
+                            <li><strong>Activos</strong> (Grupos 2, 3): cuando <em>disminuyen</em></li>
+                            <li><strong>Gastos</strong> (Grupo 6): en <em>regularizaciones</em></li>
+                            <li><strong>Pasivos</strong> (Grupos 1, 4): cuando <em>aumentan</em></li>
+                            <li><strong>Ingresos</strong> (Grupo 7): cuando se <em>devengan</em></li>
+                            <li><strong>Fondos propios</strong>: cuando <em>aumentan</em></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 16px;">
+                    <h3 style="margin-bottom: 12px;">📝 Ejemplo Práctico</h3>
+                    <p style="font-size: 14px; line-height: 1.7; margin-bottom: 12px;">Compras mercaderías por 1.000€ + 21% IVA a crédito (proveedor):</p>
+                    <table>
+                        <thead><tr><th>Cuenta</th><th>Concepto</th><th>Debe</th><th>Haber</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>6000</strong></td><td>Compras de mercaderías</td><td class="amount amount-debe">1.000,00 €</td><td></td></tr>
+                            <tr><td><strong>4720</strong></td><td>H.P. IVA Soportado</td><td class="amount amount-debe">210,00 €</td><td></td></tr>
+                            <tr><td><strong>4000</strong></td><td>Proveedores</td><td></td><td class="amount amount-haber">1.210,00 €</td></tr>
+                            <tr class="entry-total"><td colspan="2"><strong>TOTALES</strong></td><td class="amount amount-debe"><strong>1.210,00 €</strong></td><td class="amount amount-haber"><strong>1.210,00 €</strong></td></tr>
+                        </tbody>
+                    </table>
+                    <div class="tip-box" style="margin-top: 12px;">
+                        <strong>💡 ¿Por qué?</strong> Compras (6000) es gasto → se debita al aumentar. IVA Soportado (4720) es un derecho de cobro → activo → se debita al aumentar. Proveedores (4000) es deuda → pasivo → se acreeda al aumentar.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== IVA VIEW ===== -->
+            <div class="view" id="view-iva">
+                <h2 class="section-title">💶 Guía de IVA</h2>
+                <p class="section-desc">Tipos impositivos vigentes y cómo contabilizar el IVA soportado y repercutido.</p>
+                <div class="grid" style="margin-bottom: 20px;">
+                    <div class="card" style="text-align:center; border-top: 4px solid var(--danger);">
+                        <div style="font-size: 36px; font-weight: 900; color: var(--danger);">21%</div>
+                        <div style="font-weight: 700; margin: 4px 0;">Tipo General</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Bienes y servicios estándar</div>
+                    </div>
+                    <div class="card" style="text-align:center; border-top: 4px solid var(--warning);">
+                        <div style="font-size: 36px; font-weight: 900; color: var(--warning);">10%</div>
+                        <div style="font-weight: 700; margin: 4px 0;">Tipo Reducido</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Alimentos, transporte, vivienda</div>
+                    </div>
+                    <div class="card" style="text-align:center; border-top: 4px solid var(--success);">
+                        <div style="font-size: 36px; font-weight: 900; color: var(--success);">4%</div>
+                        <div style="font-weight: 700; margin: 4px 0;">Superreducido</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Pan, leche, libros, medicamentos</div>
+                    </div>
+                    <div class="card" style="text-align:center; border-top: 4px solid var(--primary);">
+                        <div style="font-size: 36px; font-weight: 900; color: var(--primary);">0%</div>
+                        <div style="font-weight: 700; margin: 4px 0;">Exento</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Sanidad, educación, seguros</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3 style="margin-bottom: 12px;">📝 Cuentas de IVA</h3>
+                    <table>
+                        <thead><tr><th>Cuenta</th><th>Nombre</th><th>Uso</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>4720</strong></td><td>H.P. IVA Soportado</td><td>Cuando <strong>compras</strong> → IVA que pagas (deducible)</td></tr>
+                            <tr><td><strong>4770</strong></td><td>H.P. IVA Repercutido</td><td>Cuando <strong>vendes</strong> → IVA que cobras (a ingresar)</td></tr>
+                            <tr><td><strong>4751</strong></td><td>H.P. IVA soportado en inversiones</td><td>IVA en compra de inmovilizado</td></tr>
+                            <tr><td><strong>4700</strong></td><td>H.P. IVA soportado no deducible</td><td>IVA en gastos no deducibles (hostelería, etc.)</td></tr>
+                            <tr><td><strong>4710</strong></td><td>H.P. IVA retenido a proveedores</td><td>Retención de IVA a profesionales</td></tr>
+                            <tr><td><strong>4730</strong></td><td>H.P.bases imponibles del IVA</td><td>Regularización IVA deducible</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card" style="margin-top: 16px;">
+                    <h3 style="margin-bottom: 12px;">🧮 Calculadora de IVA</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+                        <div class="form-group">
+                            <label>Base imponible (€)</label>
+                            <input type="number" id="iva-base" placeholder="1000" oninput="calcularIVA()">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de IVA (%)</label>
+                            <select id="iva-tipo" onchange="calcularIVA()">
+                                <option value="21">21% General</option>
+                                <option value="10">10% Reducido</option>
+                                <option value="4">4% Superreducido</option>
+                                <option value="0">0% Exento</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Resultado</label>
+                            <div style="padding: 10px; background: var(--bg); border-radius: 8px; font-size: 14px;">
+                                <div>IVA: <strong id="iva-calc-amount">0,00 €</strong></div>
+                                <div>Total: <strong id="iva-calc-total">0,00 €</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" style="margin-top: 16px;">
+                    <h3 style="margin-bottom: 12px;">📋 Liquidación trimestral de IVA</h3>
+                    <p style="font-size: 14px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 12px;">
+                        Cada trimestre debes presentar el <strong>modelo 303</strong>. La liquidación se calcula así:
+                    </p>
+                    <div style="background: var(--primary-light); padding: 16px; border-radius: 8px; font-size: 15px; font-weight: 600; text-align: center; color: var(--primary);">
+                        IVA Repercutido (cobrado) − IVA Soportado (pagado) = Cuota a ingresar
+                    </div>
+                    <div style="margin-top: 12px; font-size: 14px; line-height: 1.7; color: var(--text-secondary);">
+                        <strong>Cuentas en el modelo 303:</strong><br>
+                        • Casilla 01-03: IVA repercutido (4770) → lo que has cobrado de IVA<br>
+                        • Casilla 25-28: IVA soportado (4720) → lo que has pagado de IVA<br>
+                        • Casilla 71: Diferencia (si es positiva, pagas; si es negativa, compensas)
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== ERRORS VIEW ===== -->
+            <div class="view" id="view-errors">
+                <h2 class="section-title">⚠️ Errores Comunes en Contabilidad</h2>
+                <p class="section-desc">Los fallos más frecuentes que cometen los contables y cómo evitarlos.</p>
+                <div id="errors-list"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ========================================================================
+// PGC DATA — Estructura completa del Plan General de Contabilidad
+// ========================================================================
+const PGC_GROUPS = [
+    {
+        num: "1", name: "Financiación básica", type: "Pasivo / Neto", normal: "Haber",
+        desc: "Recoge el origen de los fondos a largo plazo: fondos propios, provisiones y deudas a largo plazo.",
+        subgroups: [
+            { num: "10", name: "Fondos propios", accounts: [
+                { n: "1000", name: "Capital social", desc: "Aportaciones de los socios" },
+                { n: "1010", name: "Aportaciones de socios que no representan capital", desc: "" },
+                { n: "1020", name: "Prima de emisión", desc: "Diferencia entre valor nominal y precio de emisión" },
+                { n: "1030", name: "Reservas legales", desc: "Obligatoria: 5% del beneficio hasta el 20% del capital" },
+                { n: "1040", name: "Reservas voluntarias", desc: "Constituidas por acuerdo de la junta" },
+                { n: "1050", name: "Reservas especiales", desc: "Por ley específica" },
+                { n: "1080", name: "Resultados de ejercicios anteriores", desc: "" },
+                { n: "1090", name: "Otras Reservas", desc: "" },
+                { n: "1100", name: "Resultados del ejercicio corriente", desc: "Beneficio o pérdida acumulada hasta la fecha" },
+                { n: "1120", name: "Dividendos a distribuir", desc: "" }
+            ]},
+            { num: "11", name: "Reservas", accounts: [
+                { n: "1100", name: "Reserva legal", desc: "" },
+                { n: "1120", name: "Reservas voluntarias", desc: "" },
+                { n: "1140", name: "Reserva por inversiones", desc: "" }
+            ]},
+            { num: "12", name: "Resultados pendientes de aplicación", accounts: [
+                { n: "1200", name: "Resultados negativos de ejercicios anteriores", desc: "" }
+            ]},
+            { num: "13", name: "Resultado del ejercicio", accounts: [
+                { n: "1300", name: "Resultado del ejercicio", desc: "Se carga el beneficio, se abona la pérdida" },
+                { n: "1310", name: "Gastos imputados al patrimonio neto", desc: "" },
+                { n: "1320", name: "Ingresos imputados al patrimonio neto", desc: "" }
+            ]},
+            { num: "14", name: "Ingresos a distribuir en varios ejercicios", accounts: [
+                { n: "1400", name: "Subvenciones de capital", desc: "" },
+                { n: "1410", name: "Ingresos fiscales a distribuir", desc: "" }
+            ]},
+            { num: "15", name: "Provisiones pasivas", accounts: [
+                { n: "1500", name: "Provisiones por pensiones y obligaciones similares", desc: "" },
+                { n: "1510", name: "Provisiones para garantías", desc: "" },
+                { n: "1520", name: "Provisiones por contratos onerosos", desc: "" },
+                { n: "1530", name: "Provisiones por tributos", desc: "" },
+                { n: "1540", name: "Otras provisiones", desc: "" }
+            ]},
+            { num: "17", name: "Deudas a largo plazo", accounts: [
+                { n: "1700", name: "Préstamos de entidades de crédito a lt", desc: "" },
+                { n: "1710", name: "Obligaciones y otros valores", desc: "" },
+                { n: "1720", name: "Deudas con empresas del grupo y asociadas", desc: "" },
+                { n: "1730", name: "Deudas a largo plazo con partícipes", desc: "" },
+                { n: "1740", name: "Otras deudas a largo plazo", desc: "" },
+                { n: "1750", name: "Intereses corrientes devengados", desc: "" }
+            ]},
+            { num: "19", name: "Pasivos por impuestos diferidos", accounts: [
+                { n: "1900", name: "Ajustes negativos del impuesto sobre beneficios", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "2", name: "Activo no corriente", type: "Activo", normal: "Debe",
+        desc: "Bienes y derechos con vida útil superior a un ejercicio: inmovilizado intangible, material, inversiones.",
+        subgroups: [
+            { num: "20", name: "Inmovilizado intangible", accounts: [
+                { n: "2000", name: "Fondo de comercio", desc: "Excedente de valor en compra de empresa" },
+                { n: "2010", name: "Propiedad industrial", desc: "Patentes, marcas, licencias" },
+                { n: "2020", name: "Fórmulas, métodos y procedimientos", desc: "" },
+                { n: "2030", name: "Derechos de traspaso", desc: "Arrendamiento local, fondo de comercio" },
+                { n: "2040", name: "Aplicaciones informáticas", desc: "Software propio o adquirido" },
+                { n: "2060", name: "Investigación y desarrollo", desc: "" },
+                { n: "2070", name: "Otros inmovilizados intangibles", desc: "" }
+            ]},
+            { num: "21", name: "Inmovilizado material", accounts: [
+                { n: "2100", name: "Terrenos y bienes naturales", desc: "" },
+                { n: "2110", name: "Edificios", desc: "" },
+                { n: "2120", name: "Instalaciones técnicas", desc: "" },
+                { n: "2130", name: "Maquinaria", desc: "" },
+                { n: "2140", name: "Utillaje", desc: "" },
+                { n: "2150", name: "Otras instalaciones", desc: "" },
+                { n: "2160", name: "Mobiliario", desc: "" },
+                { n: "2170", name: "Equipos para procesos de información", desc: "Ordenadores, servidores" },
+                { n: "2180", name: "Elementos de transporte", desc: "Vehículos" },
+                { n: "2190", name: "Otros inmovilizados materiales", desc: "" }
+            ]},
+            { num: "22", name: "Inversiones materiales en curso", accounts: [
+                { n: "2200", name: "Inversiones en inmovilizado en curso", desc: "" }
+            ]},
+            { num: "23", name: "Inversiones inmobiliarias", accounts: [
+                { n: "2300", name: "Inversiones en terrenos", desc: "" },
+                { n: "2310", name: "Inversiones en edificios", desc: "" }
+            ]},
+            { num: "24", name: "Inversiones a largo plazo en empresas del grupo y asociadas", accounts: [
+                { n: "2400", name: "Inversiones en empresas del grupo", desc: "" },
+                { n: "2420", name: "Inversiones en asociadas", desc: "" }
+            ]},
+            { num: "25", name: "Inversiones financieras a largo plazo", accounts: [
+                { n: "2500", name: "Valores de deuda a largo plazo", desc: "" },
+                { n: "2510", name: "Préstamos a largo plazo a terceros", desc: "" },
+                { n: "2520", name: "Otros préstamos a largo plazo", desc: "" }
+            ]},
+            { num: "26", name: "Activos por impuestos diferidos", accounts: [
+                { n: "2600", name: "Ajustes positivos del impuesto sobre beneficios", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "3", name: "Existencias", type: "Activo", normal: "Debe",
+        desc: "Stock de la empresa: mercaderías, materias primas, productos en curso y terminados.",
+        subgroups: [
+            { num: "30", name: "Compras", desc: "Cuentas de gastos para el PyG por naturaleza", accounts: [
+                { n: "3000", name: "Compras de mercaderías", desc: "" },
+                { n: "3001", name: "Compras de otros aprovisionamientos", desc: "" },
+                { n: "3002", name: "Compras de envases y embalajes", desc: "" },
+                { n: "3003", name: "Compras de repuestos y piezas", desc: "" },
+                { n: "3004", name: "Compras de materias primas", desc: "" },
+                { n: "3005", name: "Compras de combustibles", desc: "" },
+                { n: "3006", name: "Devoluciones de compras", desc: "" },
+                { n: "3008", name: "Descuentos por pronto pago en compras", desc: "" }
+            ]},
+            { num: "31", name: "Variaciones de existencias", accounts: [
+                { n: "3100", name: "Variación de stocks de mercaderías", desc: "" },
+                { n: "3101", name: "Variación de stocks de materias primas", desc: "" }
+            ]},
+            { num: "32", name: "Servicios exteriorizados", accounts: [
+                { n: "3200", name: "Trabajos subcontratados", desc: "" }
+            ]},
+            { num: "33", name: "Otros gastos externos", accounts: [
+                { n: "3300", name: "Arrendamientos y cánones", desc: "" },
+                { n: "3310", name: "Reparaciones y conservación", desc: "" },
+                { n: "3320", name: "Servicios profesionales", desc: "" },
+                { n: "3330", name: "Transportes", desc: "" },
+                { n: "3340", name: "Primas de seguros", desc: "" },
+                { n: "3350", name: "Servicios bancarios", desc: "" },
+                { n: "3360", name: "Otros servicios exteriores", desc: "" },
+                { n: "3370", name: "Publicidad, propaganda y relaciones públicas", desc: "" },
+                { n: "3380", name: "Comisiones y gastos de ventas", desc: "" },
+                { n: "3390", name: "Otros gastos de gestión corriente", desc: "" }
+            ]},
+            { num: "34", name: "Tributos", accounts: [
+                { n: "3400", name: "Impuesto sobre beneficios", desc: "" },
+                { n: "3420", name: "Otros tributos", desc: "" },
+                { n: "3450", name: "Anticipos de impuestos", desc: "" }
+            ]},
+            { num: "35", name: "Gastos de personal", accounts: [
+                { n: "3500", name: "Sueldos y salarios", desc: "" },
+                { n: "3510", name: "Indemnizaciones", desc: "" },
+                { n: "3520", name: "Seguridad social", desc: "" },
+                { n: "3540", name: "Pensiones", desc: "" },
+                { n: "3550", name: "Otras retribuciones", desc: "" },
+                { n: "3580", name: "Otros gastos sociales", desc: "" }
+            ]},
+            { num: "36", name: "Amortizaciones", accounts: [
+                { n: "3600", name: "Amortización del inmovilizado intangible", desc: "" },
+                { n: "3610", name: "Amortización del inmovilizado material", desc: "" }
+            ]},
+            { num: "37", name: "Otros gastos de gestión corriente", accounts: [
+                { n: "3700", name: "Pérdidas de valor de existencias", desc: "" },
+                { n: "3710", name: "Siniestros del inmovilizado", desc: "" },
+                { n: "3720", name: "Gastos extraordinarios", desc: "" }
+            ]},
+            { num: "38", name: "Gastos financieros", accounts: [
+                { n: "3800", name: "Gastos financieros por préstamos", desc: "" },
+                { n: "3810", name: "Pérdidas de valor de inversiones", desc: "" },
+                { n: "3820", name: "Otros gastos financieros", desc: "" },
+                { n: "3830", name: "Diferencias negativas de cambio", desc: "" }
+            ]},
+            { num: "39", name: "Pérdidas de valor de activos y provisiones", accounts: [
+                { n: "3900", name: "Pérdidas de valor de activos no corrientes", desc: "" },
+                { n: "3910", name: "Dotación a provisiones", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "4", name: "Acreedores y deudas a corto plazo", type: "Pasivo", normal: "Haber",
+        desc: "Deudas con proveedores, clientes, organismos públicos y otras obligaciones a corto plazo.",
+        subgroups: [
+            { num: "40", name: "Proveedores", accounts: [
+                { n: "4000", name: "Proveedores", desc: "Deudas por compras a crédito" },
+                { n: "4010", name: "Proveedores, efectos a pagar", desc: "" },
+                { n: "4030", name: "Anticipos a proveedores", desc: "Adelantos a proveedores" },
+                { n: "4040", name: "Proveedores, empresas del grupo", desc: "" }
+            ]},
+            { num: "41", name: "Acreedores varios", accounts: [
+                { n: "4100", name: "Acreedores varios", desc: "" },
+                { n: "4101", name: "Acreedores por arrendamientos", desc: "" },
+                { n: "4102", name: "Acreedores por servicios profesionales", desc: "" },
+                { n: "4103", name: "Acreedores varios, empresas del grupo", desc: "" }
+            ]},
+            { num: "43", name: "Clientes", accounts: [
+                { n: "4300", name: "Clientes", desc: "Derechos de cobro por ventas a crédito" },
+                { n: "4310", name: "Clientes, efectos a cobrar", desc: "" },
+                { n: "4320", name: "Clientes, deudores dudosos", desc: "" },
+                { n: "4350", name: "Clientes, anticipos recibidos", desc: "Antelaciones de clientes" }
+            ]},
+            { num: "44", name: "Organismos públicos", accounts: [
+                { n: "4400", name: "Hacienda Pública, IVA soportado", desc: "" },
+                { n: "4407", name: "H.P., retenciones practicadas", desc: "" },
+                { n: "4410", name: "Seguridad Social", desc: "" },
+                { n: "4450", name: "H.P., retenciones a cuenta", desc: "" }
+            ]},
+            { num: "46", name: "Socios por desembolsos no exigidos", accounts: [
+                { n: "4600", name: "Capital no exigido", desc: "" }
+            ]},
+            { num: "47", name: "Hacienda Pública", accounts: [
+                { n: "4700", name: "H.P., IVA soportado no deducible", desc: "" },
+                { n: "4710", name: "H.P., IVA retenido a proveedores", desc: "" },
+                { n: "4720", name: "H.P., IVA soportado", desc: "IVA que pagas en compras (deducible)" },
+                { n: "4730", name: "H.P., bases imponibles del IVA", desc: "" },
+                { n: "4750", name: "H.P., pagos fraccionados", desc: "" },
+                { n: "4751", name: "H.P., IVA soportado en inversiones", desc: "" },
+                { n: "4770", name: "H.P., IVA repercutido", desc: "IVA que cobras en ventas (a ingresar)" }
+            ]},
+            { num: "48", name: "Cuentas internas de grupo", accounts: [
+                { n: "4800", name: "Cuentas deBalanceo de grupo", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "5", name: "Cuentas de socios y de administración", type: "Mixto", normal: "Variable",
+        desc: "Relaciones con los socios: aportaciones, dividendos, y cuentas de la administración.",
+        subgroups: [
+            { num: "50", name: "Socios por aportaciones sociales", accounts: [
+                { n: "5000", name: "Capital social", desc: "" }
+            ]},
+            { num: "51", name: "Socios por desembolsos no exigidos", accounts: [
+                { n: "5100", name: "Capital no exigido a lt", desc: "" }
+            ]},
+            { num: "52", name: "Socios por dividendos a distribuir", accounts: [
+                { n: "5200", name: "Dividendos a distribuir", desc: "" }
+            ]},
+            { num: "55", name: "Administración", accounts: [
+                { n: "5500", name: "Administración, cta corriente", desc: "" },
+                { n: "5510", name: "Administración, anticipos", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "6", name: "Gastos", type: "Gasto", normal: "Debe",
+        desc: "Todos los gastos de la empresa: compras, servicios, personal, amortizaciones, tributos y financieros.",
+        subgroups: [
+            { num: "60", name: "Compras", accounts: [
+                { n: "6000", name: "Compras de mercaderías", desc: "Materias o productos destinados a la reventa" },
+                { n: "6001", name: "Compras de otros aprovisionamientos", desc: "" },
+                { n: "6002", name: "Compras de envases y embalajes", desc: "" },
+                { n: "6003", name: "Compras de repuestos y piezas", desc: "" },
+                { n: "6004", name: "Compras de materias primas", desc: "" },
+                { n: "6005", name: "Compras de combustibles", desc: "" },
+                { n: "6006", name: "Devoluciones de compras", desc: "Regularización negativa de compras" },
+                { n: "6008", name: "Descuentos por pronto pago en compras", desc: "" }
+            ]},
+            { num: "61", name: "Variaciones de existencias", accounts: [
+                { n: "6100", name: "Variación de stocks de mercaderías", desc: "" },
+                { n: "6101", name: "Variación de stocks de materias primas", desc: "" },
+                { n: "6102", name: "Variación de otros aprovisionamientos", desc: "" },
+                { n: "6103", name: "Variación de existencias de productos en curso", desc: "" },
+                { n: "6104", name: "Variación de existencias de productos terminados", desc: "" },
+                { n: "6105", name: "Variación de existencias de subproductos", desc: "" }
+            ]},
+            { num: "62", name: "Servicios exteriorizados", accounts: [
+                { n: "6200", name: "Trabajos realizados por otros empresas", desc: "Subcontratación" },
+                { n: "6210", name: "Reparaciones y conservación", desc: "" },
+                { n: "6220", name: "Servicios profesionales independientes", desc: "Abogados, auditores, consultores" },
+                { n: "6230", name: "Transportes", desc: "" },
+                { n: "6240", name: "Primas de seguros", desc: "" },
+                { n: "6250", name: "Servicios bancarios y similares", desc: "" },
+                { n: "6260", name: "Otros servicios exteriores", desc: "" }
+            ]},
+            { num: "63", name: "Otros gastos externos", accounts: [
+                { n: "6300", name: "Arrendamientos y cánones", desc: "" },
+                { n: "6310", name: "Arrendamientos", desc: "" },
+                { n: "6320", name: "Cánones", desc: "" },
+                { n: "6340", name: "Publicidad, propaganda y relaciones públicas", desc: "" },
+                { n: "6350", name: "Comisiones y gastos de ventas", desc: "" },
+                { n: "6360", name: "Transportes", desc: "" },
+                { n: "6370", name: "Primas de seguros", desc: "" },
+                { n: "6380", name: "Otros gastos de gestión corriente", desc: "" }
+            ]},
+            { num: "64", name: "Tributos", accounts: [
+                { n: "6400", name: "Impuesto sobre beneficios", desc: "" },
+                { n: "6420", name: "Otros tributos sobre beneficios", desc: "" },
+                { n: "6430", name: "Impuesto sobre el valor añadido", desc: "" },
+                { n: "6440", name: "Tributos sobre volumen de ingresos", desc: "" },
+                { n: "6460", name: "Otros tributos sobre gastos", desc: "" },
+                { n: "6490", name: "Anticipos de impuestos", desc: "" }
+            ]},
+            { num: "65", name: "Gastos de personal", accounts: [
+                { n: "6500", name: "Sueldos y salarios", desc: "" },
+                { n: "6510", name: "Indemnizaciones", desc: "" },
+                { n: "6520", name: "Seguridad social a cargo de la empresa", desc: "" },
+                { n: "6540", name: "Pensiones", desc: "" },
+                { n: "6550", name: "Otras retribuciones complementarias", desc: "" },
+                { n: "6580", name: "Otros gastos sociales", desc: "" },
+                { n: "6590", name: "Anticipos de sueldos y salarios", desc: "" }
+            ]},
+            { num: "66", name: "Amortizaciones", accounts: [
+                { n: "6600", name: "Amortización del inmovilizado intangible", desc: "" },
+                { n: "6610", name: "Amortización del inmovilizado material", desc: "" },
+                { n: "6620", name: "Amortización de inversiones materiales en curso", desc: "" },
+                { n: "6630", name: "Amortización de inversiones inmobiliarias", desc: "" },
+                { n: "6640", name: "Amortización de inversiones en empresas del grupo", desc: "" },
+                { n: "6650", name: "Amortización de inversiones financieras a lt", desc: "" }
+            ]},
+            { num: "67", name: "Otros gastos de gestión corriente", accounts: [
+                { n: "6700", name: "Gastos financieros por préstamos", desc: "" },
+                { n: "6710", name: "Pérdidas de valor de activos y provisiones", desc: "" },
+                { n: "6720", name: "Gastos por dividendos", desc: "" },
+                { n: "6730", name: "Otros gastos financieros", desc: "" },
+                { n: "6740", name: "Intereses corrientes devengados", desc: "" },
+                { n: "6750", name: "Diferencias negativas de cambio", desc: "" }
+            ]},
+            { num: "68", name: "Gastos financieros", accounts: [
+                { n: "6800", name: "Siniestros y pérdidas del inmovilizado", desc: "" },
+                { n: "6810", name: "Gastos extraordinarios", desc: "" },
+                { n: "6820", name: "Gastos por actuaciones judiciales", desc: "" }
+            ]},
+            { num: "69", name: "Pérdidas de valor de activos y provisiones", accounts: [
+                { n: "6900", name: "Dotación para el deterioro del valor de activos", desc: "" },
+                { n: "6910", name: "Dotación a provisiones por insolvencias", desc: "" },
+                { n: "6920", name: "Dotación a provisiones por garantías", desc: "" },
+                { n: "6930", name: "Dotación a provisiones por contratos onerosos", desc: "" },
+                { n: "6940", name: "Dotación a provisiones por remuneraciones", desc: "" },
+                { n: "6950", name: "Dotación a provisiones por impuestos", desc: "" },
+                { n: "6960", name: "Dotación a otras provisiones", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "7", name: "Ingresos", type: "Ingreso", normal: "Haber",
+        desc: "Todos los ingresos de la empresa: ventas, servicios, subvenciones e ingresos financieros.",
+        subgroups: [
+            { num: "70", name: "Ventas", accounts: [
+                { n: "7000", name: "Ventas de mercaderías", desc: "" },
+                { n: "7001", name: "Ventas de otros aprovisionamientos", desc: "" },
+                { n: "7002", name: "Ventas de envases y embalajes", desc: "" },
+                { n: "7003", name: "Ventas de repuestos y piezas", desc: "" },
+                { n: "7004", name: "Ventas de materias primas", desc: "" },
+                { n: "7006", name: "Devoluciones de ventas", desc: "Regularización negativa de ventas" },
+                { n: "7008", name: "Descuentos por pronto pago en ventas", desc: "" },
+                { n: "7009", name: "Descuentos comerciales", desc: "" }
+            ]},
+            { num: "71", name: "Variaciones de existencias de productos terminados", accounts: [
+                { n: "7100", name: "Trabajos realizados por la empresa", desc: "" }
+            ]},
+            { num: "72", name: "Trabajos realizados por la empresa para otros", accounts: [
+                { n: "7200", name: "Servicios vendidos", desc: "" },
+                { n: "7210", name: "Trabajos realizados", desc: "" }
+            ]},
+            { num: "73", name: "Subvenciones a la explotación", accounts: [
+                { n: "7300", name: "Subvenciones corrientes", desc: "" }
+            ]},
+            { num: "74", name: "Otros ingresos de gestión corriente", accounts: [
+                { n: "7400", name: "Alquileres de inmuebles", desc: "" },
+                { n: "7410", name: "Alquileres de maquinaria", desc: "" },
+                { n: "7420", name: "Alquileres de utillaje", desc: "" },
+                { n: "7430", name: "Alquileres de material de oficina", desc: "" },
+                { n: "7440", name: "Alquileres de elementos de transporte", desc: "" },
+                { n: "7460", name: "Cánones", desc: "" },
+                { n: "7470", name: "Otros ingresos de gestión corriente", desc: "" }
+            ]},
+            { num: "75", name: "Ingresos financieros", accounts: [
+                { n: "7500", name: "Ingresos de valores mobiliarios de ct", desc: "" },
+                { n: "7510", name: "Intereses de préstamos a terceros", desc: "" },
+                { n: "7520", name: "Beneficios en participaciones a ct", desc: "" },
+                { n: "7530", name: "Diferencias positivas de cambio", desc: "" },
+                { n: "7560", name: "Descuentos obtenidos", desc: "" },
+                { n: "7580", name: "Ingresos por dividendos", desc: "" },
+                { n: "7590", name: "Otros ingresos financieros", desc: "" }
+            ]},
+            { num: "76", name: "Ingresos por valoraciones de activos no corrientes", accounts: [
+                { n: "7600", name: "Beneficios por inversiones en inmovilizado", desc: "" },
+                { n: "7610", name: "Beneficios en enajenación de inversiones", desc: "" },
+                { n: "7690", name: "Otros ingresos por activos no corrientes", desc: "" }
+            ]},
+            { num: "77", name: "Subvenciones, donaciones y legados", accounts: [
+                { n: "7700", name: "Subvenciones a la explotación", desc: "" },
+                { n: "7710", name: "Donaciones", desc: "" },
+                { n: "7720", name: "Legados", desc: "" },
+                { n: "7730", name: "Subvenciones para inmovilizado", desc: "" },
+                { n: "7740", name: "Subvenciones de explotación", desc: "" }
+            ]},
+            { num: "79", name: "Exceso de provisiones", accounts: [
+                { n: "7900", name: "Exceso de provisiones", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "8", name: "Gastos e ingresos de ejercicios anteriores", type: "Resultado", normal: "Variable",
+        desc: "Correcciones de errores o cambios contables de ejercicios anteriores.",
+        subgroups: [
+            { num: "80", name: "Gastos de ejercicios anteriores", accounts: [
+                { n: "8000", name: "Gastos de ejercicios anteriores", desc: "" }
+            ]},
+            { num: "81", name: "Ingresos de ejercicios anteriores", accounts: [
+                { n: "8100", name: "Ingresos de ejercicios anteriores", desc: "" }
+            ]},
+            { num: "89", name: "Resultado de ejercicios anteriores", accounts: [
+                { n: "8900", name: "Resultado de ejercicios anteriores", desc: "" }
+            ]}
+        ]
+    },
+    {
+        num: "9", name: "Resultado del ejercicio", type: "Resultado", normal: "Variable",
+        desc: "Cierre de la cuenta de pérdidas y ganancias. Regularización de gastos e ingresos del ejercicio.",
+        subgroups: [
+            { num: "90", name: "Gastos e ingresos del ejercicio (PyG por naturaleza)", accounts: [
+                { n: "9000", name: "Gastos de compras de mercaderías", desc: "" },
+                { n: "9010", name: "Gastos de variaciones de existencias", desc: "" },
+                { n: "9020", name: "Gastos de servicios exteriorizados", desc: "" },
+                { n: "9030", name: "Gastos de otros gastos externos", desc: "" },
+                { n: "9040", name: "Gastos de tributos", desc: "" },
+                { n: "9050", name: "Gastos de personal", desc: "" },
+                { n: "9060", name: "Gastos de amortizaciones", desc: "" },
+                { n: "9070", name: "Otros gastos de gestión corriente", desc: "" },
+                { n: "9080", name: "Gastos financieros", desc: "" },
+                { n: "9090", name: "Pérdidas de valor de activos y provisiones", desc: "" }
+            ]},
+            { num: "91", name: "Ingresos del ejercicio (PyG por naturaleza)", accounts: [
+                { n: "9100", name: "Ventas de mercaderías", desc: "" },
+                { n: "9110", name: "Trabajos realizados por la empresa", desc: "" },
+                { n: "9120", name: "Subvenciones a la explotación", desc: "" },
+                { n: "9130", name: "Otros ingresos de gestión corriente", desc: "" },
+                { n: "9140", name: "Ingresos financieros", desc: "" },
+                { n: "9160", name: "Otros ingresos por activos no corrientes", desc: "" },
+                { n: "9170", name: "Subvenciones, donaciones y legados", desc: "" },
+                { n: "9190", name: "Exceso de provisiones", desc: "" }
+            ]},
+            { num: "92", name: "Cuenta de pérdidas y ganancias (PyG por función)", accounts: [
+                { n: "9200", name: "Importe neto de la cifra de negocios", desc: "" },
+                { n: "9210", name: "Gastos de explotación", desc: "" },
+                { n: "9220", name: "Gastos administración", desc: "" },
+                { n: "9230", name: "Gastos comerciales", desc: "" },
+                { n: "9260", name: "Resultado de operaciones continuadas", desc: "" }
+            ]},
+            { num: "99", name: "Resultado del ejercicio simplificado", accounts: [
+                { n: "9900", name: "Resultado del ejercicio", desc: "" }
+            ]}
+        ]
+    }
+];
+
+// ========================================================================
+// COMMON OPERATIONS — Asientos más frecuentes
+// ========================================================================
+const OPERATIONS = [
+    {
+        id: "compra-merc-iva", name: "Compra de mercaderías con IVA", icon: "🛒", category: "compra",
+        desc: "Adquisición de mercaderías para reventa, con IVA deducible a crédito.",
+        entry: [
+            { acc: "6000", desc: "Compras de mercaderías", type: "D", amountLabel: "Base imponible" },
+            { acc: "4720", desc: "H.P. IVA Soportado", type: "D", amountLabel: "IVA (21%)" },
+            { acc: "4000", desc: "Proveedores", type: "C", amountLabel: "Total factura" }
+        ],
+        why: "Compras es gasto → se debita. IVA Soportado es derecho a deducir → activo → se debita. Proveedores es deuda → pasivo → se acreeda.",
+        tip: "Solo puedes deducir el IVA si la factura cumple los requisitos formales: NIF, fecha, base, tipo, cuota, desglose.",
+        example: { labels: ["Base", "IVA (21%)", "Total"], values: ["1.000,00 €", "210,00 €", "1.210,00 €"] }
+    },
+    {
+        id: "compra-servicio", name: "Compra de servicios profesionales", icon: "💼", category: "compra",
+        desc: "Pago a un profesional independiente (abogado, consultor, auditor) con retención.",
+        entry: [
+            { acc: "6220", desc: "Servicios profesionales independientes", type: "D", amountLabel: "Base imponible" },
+            { acc: "4720", desc: "H.P. IVA Soportado", type: "D", amountLabel: "IVA (21%)" },
+            { acc: "4751", desc: "H.P. retenciones a cuenta (IRPF)", type: "D", amountLabel: "Retención (19%)" },
+            { acc: "4102", desc: "Acreedores por servicios profesionales", type: "C", amountLabel: "Total a pagar" }
+        ],
+        why: "Retención: ahorras IRPF al pagador pero debes ingresarla a Hacienda. La retención es un derecho de cobro para el profesional, no un gasto para ti.",
+        tip: "Retención IRPF a profesionales: 19% (1er año), 21% (2º y 3er año), 24% (a partir del 3er año). Si el profesional está exento, no aplica.",
+        example: { labels: ["Base", "IVA (21%)", "Retención (19%)", "Total a pagar"], values: ["1.000,00 €", "210,00 €", "190,00 €", "1.020,00 €"] }
+    },
+    {
+        id: "compra-material", name: "Compra de material fijo (inmovilizado)", icon: "🖥️", category: "compra",
+        desc: "Adquisición de equipo, maquinaria u otro inmovilizado con vida útil >1 año.",
+        entry: [
+            { acc: "2170", desc: "Equipos para procesos de información", type: "D", amountLabel: "Coste inmovilizado" },
+            { acc: "4720", desc: "H.P. IVA Soportado", type: "D", amountLabel: "IVA (21%)" },
+            { acc: "4000", desc: "Proveedores", type: "C", amountLabel: "Total factura" }
+        ],
+        why: "El inmovilizado es activo → se debita. El IVA en inversiones va a cuenta 4751. Si es deducible puede ir a 4720.",
+        tip: "El IVA en inmovilizado se registra en 4751 (inversiones) o 4720 (si es deducible). Verifica la deducibilidad según la actividad.",
+        example: { labels: ["Base", "IVA (21%)", "Total"], values: ["2.000,00 €", "420,00 €", "2.420,00 €"] }
+    },
+    {
+        id: "compra-devolucion", name: "Devolución de compra", icon: "↩️", category: "compra",
+        desc: "Devoluciones de mercaderías al proveedor por defectos, excesos o errores.",
+        entry: [
+            { acc: "4000", desc: "Proveedores", type: "D", amountLabel: "Base + IVA" },
+            { acc: "6006", desc: "Devoluciones de compras", type: "C", amountLabel: "Base imponible" },
+            { acc: "4720", desc: "H.P. IVA Soportado", type: "C", amountLabel: "IVA devuelto" }
+        ],
+        why: "Devoluciones de compras es un ingreso por recuperación → se abona (opuesto a gasto). Proveedores disminuye → se debita.",
+        tip: "La devolución se registra el mismo ejercicio que la compra original. Si ya pasó el trimestre, se ajusta en el modelo 303.",
+        example: { labels: ["Base", "IVA (21%)", "Total"], values: ["500,00 €", "105,00 €", "605,00 €"] }
+    },
+    {
+        id: "venta-merc-iva", name: "Venta de mercaderías con IVA", icon: "💰", category: "venta",
+        desc: "Venta de productos o mercaderías a clientes con IVA repercutido a crédito.",
+        entry: [
+            { acc: "4300", desc: "Clientes", type: "D", amountLabel: "Total factura" },
+            { acc: "7000", desc: "Ventas de mercaderías", type: "C", amountLabel: "Base imponible" },
+            { acc: "4770", desc: "H.P. IVA Repercutido", type: "C", amountLabel: "IVA (21%)" }
+        ],
+        why: "Clientes es derecho de cobro → activo → se debita. Ventas es ingreso → se acreeda. IVA Repercutido es deuda con Hacienda → pasivo → se acreeda.",
+        tip: "El IVA repercutido se ingresa trimestralmente (modelo 303). Nunca lo consideres ingreso: es un pasivo transitorio.",
+        example: { labels: ["Base", "IVA (21%)", "Total"], values: ["1.500,00 €", "315,00 €", "1.815,00 €"] }
+    },
+    {
+        id: "venta-servicio", name: "Prestación de servicios", icon: "🔧", category: "venta",
+        desc: "Facturación de servicios profesionales a un cliente con IVA y retención.",
+        entry: [
+            { acc: "4300", desc: "Clientes", type: "D", amountLabel: "Total a cobrar" },
+            { acc: "7200", desc: "Servicios vendidos", type: "C", amountLabel: "Base imponible" },
+            { acc: "4770", desc: "H.P. IVA Repercutido", type: "C", amountLabel: "IVA (21%)" }
+        ],
+        why: "Clientes es activo (derecho de cobro) → se debita. Servicios vendidos es ingreso → se acreeda. IVA repercutido es pasivo → se acreeda.",
+        tip: "Si el cliente es un profesional, te retiene IRPF. Anota la retención como gasto deducible en tu cuenta 6520.",
+        example: { labels: ["Base", "IVA (21%)", "Total"], values: ["3.000,00 €", "630,00 €", "3.630,00 €"] }
+    },
+    {
+        id: "venta-devolucion", name: "Devolución de venta", icon: "↩️", category: "venta",
+        desc: "Devolución de mercaderías por parte de un cliente.",
+        entry: [
+            { acc: "7006", desc: "Devoluciones de ventas", type: "D", amountLabel: "Base imponible" },
+            { acc: "4770", desc: "H.P. IVA Repercutido", type: "C", amountLabel: "IVA devuelto" },
+            { acc: "4300", desc: "Clientes", type: "C", amountLabel: "Total" }
+        ],
+        why: "Devoluciones de ventas reduce el ingreso → se debita (opuesto a ventas). Clientes disminuye → se acreeda.",
+        tip: "Emite factura rectificativa. El IVA se regulariza en el modelo 303 del trimestre en que se produce la devolución.",
+        example: { labels: ["Base", "IVA (21%)", "Total"], values: ["800,00 €", "168,00 €", "968,00 €"] }
+    },
+    {
+        id: "nomina", name: "Nómina de empleados", icon: "👥", category: "nomina",
+        desc: "Registro de la nómina mensual con sueldo bruto, retenciones IRPF y SS.",
+        entry: [
+            { acc: "6500", desc: "Sueldos y salarios", type: "D", amountLabel: "Salario bruto" },
+            { acc: "6520", desc: "Seguridad social a cargo de empresa", type: "D", amountLabel: "SS empresa (23,6%)" },
+            { acc: "4710", desc: "H.P. retenciones a proveedores (IRPF)", type: "C", amountLabel: "Retención IRPF" },
+            { acc: "4710", desc: "H.P. Seguridad Social (cuota obrero)", type: "C", amountLabel: "SS trabajador (6,35%)" },
+            { acc: "4100", desc: "Acreedores varios (trabajadores)", type: "C", amountLabel: "Neto a pagar" },
+            { acc: "4710", desc: "H.P. Seguridad Social (cuota empresario)", type: "C", amountLabel: "SS a pagar a TGSS" }
+        ],
+        why: "Sueldos es gasto → se debita. SS empresa es gasto extra → se debita. Las retenciones son deudas con Hacienda → pasivo → se acreedan. El neto es lo que debes al trabajador.",
+        tip: "El IRPF se retiene según las tablas de la Agencia Tributaria. La SS empresarial varía: ~23,6% para contingencias comunes (según convenio).",
+        example: { labels: ["Bruto", "IRPF (15%)", "SS obrero (6,35%)", "Neto"], values: ["2.000,00 €", "300,00 €", "127,00 €", "1.573,00 €"] }
+    },
+    {
+        id: "pago-proveedor", name: "Pago a proveedor", icon: "🏦", category: "financiero",
+        desc: "Pago de una factura de proveedor mediante transferencia bancaria.",
+        entry: [
+            { acc: "4000", desc: "Proveedores", type: "D", amountLabel: "Importe deuda" },
+            { acc: "5720", desc: "Bancos", type: "C", amountLabel: "Importe pagado" }
+        ],
+        why: "Proveedores disminuye (pagas la deuda) → pasivo que baja → se debita. Bancos disminuye (sale dinero) → activo que baja → se acreeda.",
+        tip: "Si pagas con descuento por pronto pago, registra también el descuento (cuenta 6080 o 4008).",
+        example: { labels: ["Importe"], values: ["1.210,00 €"] }
+    },
+    {
+        id: "cobro-cliente", name: "Cobro de cliente", icon: "💵", category: "financiero",
+        desc: "Cobro de una factura de cliente mediante transferencia bancaria.",
+        entry: [
+            { acc: "5720", desc: "Bancos", type: "D", amountLabel: "Importe cobrado" },
+            { acc: "4300", desc: "Clientes", type: "C", amountLabel: "Importe facturado" }
+        ],
+        why: "Bancos aumenta (entra dinero) → activo que sube → se debita. Clientes disminuye (te pagan) → activo que baja → se acreeda.",
+        tip: "Si hay descuento por pronto pago, registra la diferencia en cuenta 7008.",
+        example: { labels: ["Importe"], values: ["1.815,00 €"] }
+    },
+    {
+        id: "prestamo-recibido", name: "Préstamo bancario recibido", icon: "🏛️", category: "financiero",
+        desc: "Concesión de un préstamo por una entidad de crédito.",
+        entry: [
+            { acc: "5720", desc: "Bancos", type: "D", amountLabel: "Importe prestado" },
+            { acc: "1700", desc: "Préstamos entidades crédito a lt", type: "C", amountLabel: "Capital a devolver" }
+        ],
+        why: "Bancos aumenta (te ingresan dinero) → activo → se debita. El préstamo es deuda a largo plazo → pasivo → se acreeda.",
+        tip: "Si el préstamo es a corto plazo (<1 año), usa cuenta 520 en vez de 1700.",
+        example: { labels: ["Importe"], values: ["50.000,00 €"] }
+    },
+    {
+        id: "pago-intereses", name: "Pago de intereses de préstamo", icon: "📈", category: "financiero",
+        desc: "Cobro de intereses por un préstamo bancario.",
+        entry: [
+            { acc: "6700", desc: "Gastos financieros por préstamos", type: "D", amountLabel: "Intereses devengados" },
+            { acc: "5720", desc: "Bancos", type: "C", amountLabel: "Importe descontado" }
+        ],
+        why: "Intereses son gasto financiero → se debita. Bancos disminuye (te descuentan) → activo que baja → se acreeda.",
+        tip: "Los intereses son gasto deducible. Si el préstamo es para inversiones, el IVA de las comisiones es deducible.",
+        example: { labels: ["Intereses"], values: ["250,00 €"] }
+    },
+    {
+        id: "amort-material", name: "Amortización inmovilizado material", icon: "📉", category: "otro",
+        desc: "Dotación anual de depreciación del inmovilizado material (edificios, maquinaria, etc.).",
+        entry: [
+            { acc: "6610", desc: "Amortización del inmovilizado material", type: "D", amountLabel: "Cuota anual" },
+            { acc: "2810", desc: "Amortización acumulada inmovilizado material", type: "C", amountLabel: "Cuota anual" }
+        ],
+        why: "Amortización es gasto → se debita. La amortización acumulada reduce el valor del activo → contrapartida de activo que baja → se acreeda.",
+        tip: "El método y porcentaje debe ser coherente con la vida útil real. Métodos: lineal, producción, unidades de obra. Consultar tablas del art. 29 LIRPF.",
+        example: { labels: ["Valor adquisición", "Vida útil", "Cuota anual (lineal 20%)"], values: ["10.000,00 €", "5 años", "2.000,00 €"] }
+    },
+    {
+        id: "amort-intangible", name: "Amortización inmovilizado intangible", icon: "💻", category: "otro",
+        desc: "Dotación de depreciación de software, patentes, licencias, etc.",
+        entry: [
+            { acc: "6600", desc: "Amortización del inmovilizado intangible", type: "D", amountLabel: "Cuota anual" },
+            { acc: "2800", desc: "Amortización acumulada inmovilizado intangible", type: "C", amountLabel: "Cuota anual" }
+        ],
+        why: "Igual que la amortización material: gasto → debe; amortización acumulada → haber.",
+        tip: "El software se amortiza generalmente al 25% anual (vida útil 4 años). Las patentes se amortizan según su vida útil legal o económica.",
+        example: { labels: ["Software", "Amortización anual (25%)"], values: ["8.000,00 €", "2.000,00 €"] }
+    },
+    {
+        id: "gastos-bancarios", name: "Gastos bancarios", icon: "🏦", category: "financiero",
+        desc: "Comisiones, mantenimientos y otros gastos bancarios.",
+        entry: [
+            { acc: "6250", desc: "Servicios bancarios y similares", type: "D", amountLabel: "Importe gasto" },
+            { acc: "5720", desc: "Bancos", type: "C", amountLabel: "Importe descontado" }
+        ],
+        why: "Gastos bancarios es gasto de gestión corriente → se debita. Bancos disminuye → se acreeda.",
+        tip: "Si hay IVA en los gastos bancarios, añade 4720 por el IVA. Ejemplo: gasto 100€ + IVA 21€ = 121€ total.",
+        example: { labels: ["Gasto", "IVA (21%)", "Total"], values: ["40,00 €", "8,40 €", "48,40 €"] }
+    },
+    {
+        id: "pago-irpf", name: "Pago de retenciones IRPF trimestral", icon: "🏛️", category: "impuesto",
+        desc: "Ingreso trimestral de las retenciones de IRPF practicadas a trabajadores y profesionales.",
+        entry: [
+            { acc: "4751", desc: "H.P. retenciones a cuenta", type: "D", amountLabel: "Total retenciones" },
+            { acc: "5720", desc: "Bancos", type: "C", amountLabel: "Importe pagado" }
+        ],
+        why: "Retenciones era un pasivo (deuda con Hacienda) → se debita al pagarla. Bancos disminuye → se acreeda.",
+        tip: "Plazos de presentación: Q1 (abril), Q2 (julio), Q3 (octubre), Q4 (enero). Modelo 111 (retenciones a trabajadores) y 111 (profesionales).",
+        example: { labels: ["Retenciones trimestral"], values: ["1.200,00 €"] }
+    },
+    {
+        id: "pago-iva", name: "Pago trimestral de IVA", icon: "💶", category: "impuesto",
+        desc: "Ingreso del resultado de la liquidación trimestral de IVA (modelo 303).",
+        entry: [
+            { acc: "4770", desc: "H.P. IVA Repercutido", type: "D", amountLabel: "IVA repercutido" },
+            { acc: "4720", desc: "H.P. IVA Soportado", type: "C", amountLabel: "IVA soportado" },
+            { acc: "5720", desc: "Bancos", type: "C", amountLabel: "Cuota a ingresar" }
+        ],
+        why: "Liquidar IVA: cancelas la deuda de IVA repercutido (H.P. 4770) contra el derecho de IVA soportado (H.P. 4720). El resultado va al banco.",
+        tip: "Si el IVA soportado supera al repercutido, tienes saldo a tu favor. Puedes compensarlo el próximo trimestre o solicitar devolución.",
+        example: { labels: ["Repercutido", "Soportado", "A ingresar"], values: ["3.000,00 €", "1.500,00 €", "1.500,00 €"] }
+    },
+    {
+        id: "constitucion", name: "Constitución de sociedad (aporte capital)", icon: "🏢", category: "otro",
+        desc: "Aporte inicial de capital por los socios para constituir una sociedad.",
+        entry: [
+            { acc: "5720", desc: "Bancos", type: "D", amountLabel: "Aporte dinerario" },
+            { acc: "2170", desc: "Equipos para procesos de información", type: "D", amountLabel: "Bienes aportados" },
+            { acc: "1000", desc: "Capital social", type: "C", amountLabel: "Capital suscrito" }
+        ],
+        why: "Los bienes y dinero son activos → se debitan. Capital social es fondos propios → se acreeda. El capital debe ser igual a la suma de aportaciones.",
+        tip: "Si hay prima de emisión (valor superior al nominal), usa cuenta 1020. Los bienes no dinerarios deben estar valorados por experto independiente.",
+        example: { labels: ["Dinerario", "Bienes", "Capital"], values: ["30.000,00 €", "20.000,00 €", "50.000,00 €"] }
+    },
+    {
+        id: "alquiler", name: "Pago de alquiler local/oficina", icon: "🏢", category: "compra",
+        desc: "Pago mensual de arrendamiento de local comercial o despacho.",
+        entry: [
+            { acc: "6310", desc: "Arrendamientos", type: "D", amountLabel: "Base imponible" },
+            { acc: "4720", desc: "H.P. IVA Soportado", type: "D", amountLabel: "IVA (21%)" },
+            { acc: "5720", desc: "Bancos", type: "C", amountLabel: "Total pagado" }
+        ],
+        why: "Arrendamiento es gasto externo → se debita. IVA soportado es derecho deducible → se debita. El banco paga → activo que baja → se acreeda.",
+        tip: "Si el arrendador es particular y no factura IVA, registra solo el gasto sin 4720. Si es administrador de fincas, aplica retención IRPF (19%).",
+        example: { labels: ["Alquiler", "IVA (21%)", "Total"], values: ["1.000,00 €", "210,00 €", "1.210,00 €"] }
+    },
+    {
+        id: "dotacion-provision", name: "Dotación a provisiones", icon: "🛡️", category: "otro",
+        desc: "Creación o dotación de provisiones para garantías, contratos onerosos, etc.",
+        entry: [
+            { acc: "6920", desc: "Dotación a provisiones por garantías", type: "D", amountLabel: "Importe dotación" },
+            { acc: "1510", desc: "Provisiones para garantías", type: "C", amountLabel: "Importe dotación" }
+        ],
+        why: "La dotación a provisiones es gasto → se debita. La provisión es pasivo → se acreeda. Equivale a reconocer una futura obligación.",
+        tip: "Las provisiones son deducibles fiscalmente si cumplen los requisitos del art. 14.2 del TRLIS: que exista obligación legal o que sea normal en la actividad.",
+        example: { labels: ["Dotación"], values: ["5.000,00 €"] }
+    },
+    {
+        id: "cobro-subvencion", name: "Cobro de subvención", icon: "🎁", category: "otro",
+        desc: "Ingreso de una subvención concedida por la administración pública.",
+        entry: [
+            { acc: "5720", desc: "Bancos", type: "D", amountLabel: "Importe cobrado" },
+            { acc: "7700", desc: "Subvenciones a la explotación", type: "C", amountLabel: "Importe subvención" }
+        ],
+        why: "Bancos aumenta → activo → se debita. Subvenciones es ingreso → se acreeda.",
+        tip: "Si la subvención es para inmovilizado, usa 7730 y se imputa al resultado por amortizaciones. La subvención se integra en bases imponibles de I.S.",
+        example: { labels: ["Subvención"], values: ["15.000,00 €"] }
+    },
+    {
+        id: "regularizacion-stock", name: "Regularización de existencias (cierre)", icon: "📊", category: "otro",
+        desc: "Ajuste de existencias a valor de mercado al cierre del ejercicio.",
+        entry: [
+            { acc: "6100", desc: "Variación de stocks de mercaderías", type: "D", amountLabel: "Deterioro (si baja)" },
+            { acc: "3100", desc: "Variación de stocks de mercaderías", type: "C", amountLabel: "Deterioro (si baja)" }
+        ],
+        why: "Si el valor de mercado es inferior al coste, se regulariza por el deterioro. Si sube, el asiento se invierte.",
+        tip: "La regularización es OBLIGATORIA en el cierre del ejercicio. Verifica el art. 38 de la Ley de Sociedades de Capital.",
+        example: { labels: ["Stock anterior", "Stock final", "Deterioro"], values: ["20.000 €", "18.000 €", "2.000 €"] }
+    },
+    {
+        id: "compra-materia-prima", name: "Compra de materias primas", icon: "🏭", category: "compra",
+        desc: "Adquisición de materias primas para el proceso de producción.",
+        entry: [
+            { acc: "6004", desc: "Compras de materias primas", type: "D", amountLabel: "Base imponible" },
+            { acc: "4720", desc: "H.P. IVA Soportado", type: "D", amountLabel: "IVA (21%)" },
+            { acc: "4000", desc: "Proveedores", type: "C", amountLabel: "Total factura" }
+        ],
+        why: "Compras de MP es gasto → se debita. IVA soportado → se debita. Proveedores → pasivo → se acreeda.",
+        tip: "Las materias primas se valoran a coste de adquisición. Si son importadas, incluye aranceles y transportes en el coste.",
+        example: { labels: ["Base", "IVA (21%)", "Total"], values: ["5.000,00 €", "1.050,00 €", "6.050,00 €"] }
+    }
+];
+
+// ========================================================================
+// COMMON ERRORS
+// ========================================================================
+const COMMON_ERRORS = [
+    {
+        title: "Confundir IVA Soportado con Gasto",
+        desc: "Error: registrar el IVA como gasto en vez de en la cuenta 4720.",
+        wrong: "Debe 6000 Compras 1.210 € / Haber 4000 Proveedores 1.210 €",
+        correct: "Debe 6000 Compras 1.000 € + Debe 4720 IVA 210 € / Haber 4000 Proveedores 1.210 €",
+        impact: "Alta — distorsiona el resultado y pierdes el derecho a deducir IVA."
+    },
+    {
+        title: "Olvidar la cuadratura Debe = Haber",
+        desc: "Error: los importes del Debe y el Haber no coinciden.",
+        wrong: "Debe 6000: 1.000 € / Haber 4000: 1.210 €",
+        correct: "Siempre Debe = Haber. Verificar antes de registrar.",
+        impact: "Alta — el asiento es inválido y genera errores en balances."
+    },
+    {
+        title: "Tratar subvenciones como ingreso sin integración fiscal",
+        desc: "Error: no integrar la subvención en la base imponible del Impuesto sobre Sociedades.",
+        wrong: "Solo registrar ingreso sin tener en cuenta la tributación.",
+        correct: "La subvención se integra en bases imponibles. Calcular el efecto fiscal.",
+        impact: "Media — puede generar sanciones por falta de tributación."
+    },
+    {
+        title: "Amortizar sin coherencia con la vida útil",
+        desc: "Error: usar porcentajes de amortización sin justificación de la vida útil real.",
+        wrong: "Amortizar un edificio al 50% anual sin justificación.",
+        correct: "Usar tablas del art. 29 LIRPF o justificar vida útil real por informe pericial.",
+        impact: "Media — Hacienda puede regularizar la amortización."
+    },
+    {
+        title: "No registrar devoluciones de compras/ventas",
+        desc: "Error: no contabilizar las devoluciones recibidas o realizadas.",
+        wrong: "Ignorar la devolución o ajustar solo en el IVA.",
+        correct: "Registrar la devolución con factura rectificativa. Ajustar compras/ventas e IVA.",
+        impact: "Media — distorsiona cifra de negocios y bases imponibles."
+    },
+    {
+        title: "Mezclar gastos de ejercicios diferentes",
+        desc: "Error: contabilizar gastos de un año en otro ejercicio sin justificación.",
+        wrong: "Registrar una factura del año anterior como gasto del año actual.",
+        correct: "Usar criterio de devengo. Si no es posible, contabilizar en cuenta 8000 (gastos ej. anteriores).",
+        impact: "Alta — altera el resultado del ejercicio y es irregular fiscalmente."
+    },
+    {
+        title: "Olvidar retenciones a profesionales",
+        desc: "Error: no practicar retención IRPF a profesionales que la tienen obligatoria.",
+        wrong: "Pagar la factura completa sin retener IRPF.",
+        correct: "Retener IRPF según tablas (19-24%) y declararlo trimestralmente (modelo 111).",
+        impact: "Alta — sanciones por no retener y falta de declaración."
+    },
+    {
+        title: "No revisar la cuadratura del IVA mensualmente",
+        desc: "Error: solo revisar el IVA al hacer la liquidación trimestral.",
+        wrong: "Dejar errores acumulados durante 3 meses.",
+        correct: "Conciliar el IVA mensualmente: cuadrar 4720, 4770 y libro registro.",
+        impact: "Media — errores acumulados difíciles de localizar y corregir."
+    },
+    {
+        title: "Confundir provisión con gasto no deducible",
+        desc: "Error: dotar provisiones que no cumplen los requisitos de deducibilidad fiscal.",
+        wrong: "Dotar provisiones genéricas sin justificación legal.",
+        correct: "Solo son deducibles las provisiones del art. 14.2 TRLIS: garantías, riesgos, contratos onerosos.",
+        impact: "Media — diferencias temporarias que generan impuestos diferidos."
+    },
+    {
+        title: "No amortizar inmovilizado intangible de vida limitada",
+        desc: "Error: no dotar amortización en software y patentes con vida útil limitada.",
+        wrong: "Mantener el software en balance sin amortización.",
+        correct: "Amortizar según vida útil: software ~4 años (25%), patentes según vida legal.",
+        impact: "Media — sobrevalora activos y no reconoce gastos del ejercicio."
+    }
+];
+
+// ========================================================================
+// APP STATE & NAVIGATION
+// ========================================================================
+let currentView = 'home';
+let wizardState = {};
+
+function navigateTo(view) {
+    currentView = view;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const el = document.getElementById('view-' + view);
+    if (el) { el.classList.add('active'); el.classList.add('fade-in'); }
+    const nav = document.querySelector(`.nav-item[data-view="${view}"]`);
+    if (nav) nav.classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    window.scrollTo(0, 0);
+    if (view === 'wizard') initWizard();
+    if (view === 'operations') renderOperations();
+    if (view === 'errors') renderErrors();
+    if (view === 'catalog') renderCatalog();
+}
+
+document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+    item.addEventListener('click', () => navigateTo(item.dataset.view));
+});
+
+// ========================================================================
+// SEARCH
+// ========================================================================
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+let allAccounts = [];
+
+PGC_GROUPS.forEach(g => {
+    g.subgroups.forEach(sg => {
+        if (sg.accounts) {
+            sg.accounts.forEach(a => {
+                allAccounts.push({ ...a, groupName: g.name, groupNum: g.num, sgName: sg.name, sgNum: sg.num });
+            });
+        }
+    });
+});
+
+searchInput.addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    if (q.length < 2) { searchResults.classList.remove('show'); return; }
+    const matches = allAccounts.filter(a => a.n.includes(q) || a.name.toLowerCase().includes(q) || (a.desc && a.desc.toLowerCase().includes(q))).slice(0, 15);
+    if (matches.length === 0) { searchResults.innerHTML = '<div class="search-result-item"><span style="color:var(--text-secondary)">No se encontraron resultados</span></div>'; }
+    else {
+        searchResults.innerHTML = matches.map(a => `
+            <div class="search-result-item" onclick="showAccountDetail('${a.n}')">
+                <span class="sr-num">${a.n}</span>
+                <div>
+                    <div class="sr-name">${a.name}</div>
+                    <div class="sr-type">Grupo ${a.groupNum} — ${a.sgName}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+    searchResults.classList.add('show');
+});
+
+searchInput.addEventListener('blur', () => setTimeout(() => searchResults.classList.remove('show'), 200));
+searchInput.addEventListener('focus', function() { if (this.value.length >= 2) this.dispatchEvent(new Event('input')); });
+
+function showAccountDetail(num) {
+    searchResults.classList.remove('show');
+    navigateTo('catalog');
+    setTimeout(() => {
+        const acc = allAccounts.find(a => a.n === num);
+        if (!acc) return;
+        const detail = document.getElementById('account-detail');
+        const typeTag = acc.groupNum <= 3 || acc.groupNum === 4 ? (acc.groupNum <= 3 ? 'tag-asset' : 'tag-liability') : (acc.groupNum === '6' || acc.groupNum === '7' ? (acc.groupNum === '6' ? 'tag-expense' : 'tag-income') : 'tag-equity');
+        const typeLabel = acc.groupNum <= 3 ? 'Activo' : acc.groupNum === '4' ? 'Pasivo' : acc.groupNum === '6' ? 'Gasto' : acc.groupNum === '7' ? 'Ingreso' : 'Fondos Propios';
+        const normalBal = acc.groupNum <= 3 || acc.groupNum === '6' ? 'Debe' : 'Haber';
+        detail.style.display = 'block';
+        detail.innerHTML = `
+            <div class="card account-detail fade-in" style="margin-top:16px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                    <div>
+                        <h3>${acc.n} — ${acc.name}</h3>
+                        <div class="meta" style="margin-top:8px;">
+                            <span class="tag ${typeTag}">${typeLabel}</span>
+                            <span class="badge badge-info">Grupo ${acc.groupNum} — ${acc.groupName}</span>
+                            <span class="badge" style="background:#f1f5f9;">Saldo normal: <strong>${normalBal}</strong></span>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('account-detail').style.display='none'">✕ Cerrar</button>
+                </div>
+                ${acc.desc ? `<p style="margin-top:8px;color:var(--text-secondary);font-size:14px;">${acc.desc}</p>` : ''}
+                <div style="margin-top:16px;">
+                    <strong>Regla:</strong> ${normalBal === 'Debe' ? 'Aumento en <span class="amount-debe"><strong>DEBE</strong></span> / Disminución en <span class="amount-haber"><strong>HABER</strong></span>' : 'Aumento en <span class="amount-haber"><strong>HABER</strong></span> / Disminución en <span class="amount-debe"><strong>DEBE</strong></span>'}
+                </div>
+            </div>
+        `;
+        detail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+}
+
+// ========================================================================
+// CATALOG
+// ========================================================================
+function renderCatalog() {
+    const tree = document.getElementById('account-tree');
+    tree.innerHTML = PGC_GROUPS.map(g => `
+        <li>
+            <div class="group-header" onclick="toggleGroup(this, '${g.num}')">
+                <span class="arrow">▶</span>
+                <span class="tag tag-${g.type === 'Activo' ? 'asset' : g.type === 'Pasivo' || g.type === 'Pasivo / Neto' ? 'liability' : g.type === 'Gasto' ? 'expense' : g.type === 'Ingreso' ? 'income' : 'equity'}" style="font-size:11px;">${g.type}</span>
+                <strong>${g.num}</strong> — ${g.name}
+                <span style="margin-left:auto;font-size:12px;color:var(--text-secondary);">Normal: ${g.normal}</span>
+            </div>
+            <ul class="subgroup-list" id="sg-${g.num}">
+                ${g.subgroups.map(sg => `
+                    <li>
+                        <div class="subgroup-item" style="font-weight:600;color:var(--text-secondary);margin-top:4px;">
+                            ${sg.num} — ${sg.name}
+                        </div>
+                        ${sg.accounts ? sg.accounts.map(a => `
+                            <div class="subgroup-item" style="padding-left:20px;cursor:pointer;" onclick="showAccountDetail('${a.n}')">
+                                <strong>${a.n}</strong> — ${a.name}
+                            </div>
+                        `).join('') : ''}
+                    </li>
+                `).join('')}
+            </ul>
+        </li>
+    `).join('');
+}
+
+function toggleGroup(el, num) {
+    el.classList.toggle('open');
+    const list = document.getElementById('sg-' + num);
+    list.classList.toggle('show');
+}
+
+// ========================================================================
+// WIZARD
+// ========================================================================
+const WIZARD_STEPS = {
+    types: [
+        { id: "compra-merc", icon: "🛒", label: "Compra mercaderías" },
+        { id: "compra-serv", icon: "💼", label: "Compra servicios" },
+        { id: "compra-material", icon: "🖥️", label: "Compra material (inmovilizado)" },
+        { id: "venta-merc", icon: "💰", label: "Venta mercaderías" },
+        { id: "venta-serv", icon: "🔧", label: "Prestación de servicios" },
+        { id: "nomina", icon: "👥", label: "Nómina empleados" },
+        { id: "pago-prov", icon: "🏦", label: "Pago a proveedor" },
+        { id: "cobro-cli", icon: "💵", label: "Cobro de cliente" },
+        { id: "prestamo", icon: "🏛️", label: "Préstamo bancario" },
+        { id: "pago-intereses", icon: "📈", label: "Pago intereses" },
+        { id: "amort-material", icon: "📉", label: "Amortización material" },
+        { id: "amort-intangible", icon: "💻", label: "Amortización intangible" },
+        { id: "gastos-banco", icon: "🏦", label: "Gastos bancarios" },
+        { id: "pago-irpf", icon: "🏛️", label: "Pago IRPF trimestral" },
+        { id: "pago-iva", icon: "💶", label: "Liquidación IVA" },
+        { id: "otro", icon: "📝", label: "Otra operación" }
+    ]
+};
+
+function initWizard() {
+    wizardState = { step: 1, type: null, base: 0, iva: 21, retencion: 0 };
+    renderWizardStep();
+}
+
+function renderWizardStep() {
+    const c = document.getElementById('wizard-container');
+    const s = wizardState.step;
+    const progress = [1, 2, 3, 4].map(i => `<div class="step-dot ${i < s ? 'done' : i === s ? 'active' : ''}"></div>`).join('');
+    
+    let html = `<div class="wizard-progress">${progress}</div>`;
+    
+    if (s === 1) {
+        html += `
+            <div class="wizard-step fade-in">
+                <h3>📋 Paso 1: ¿Qué tipo de operación?</h3>
+                <div class="option-grid">
+                    ${WIZARD_STEPS.types.map(t => `
+                        <div class="option-card ${wizardState.type === t.id ? 'selected' : ''}" onclick="selectWizardType('${t.id}')">
+                            <div class="opt-icon">${t.icon}</div>
+                            <div class="opt-label">${t.label}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    } else if (s === 2) {
+        const needIva = ['compra-merc', 'compra-serv', 'compra-material', 'venta-merc', 'venta-serv'].includes(wizardState.type);
+        const needRetencion = ['compra-serv'].includes(wizardState.type);
+        html += `
+            <div class="wizard-step fade-in">
+                <h3>💰 Paso 2: Importes</h3>
+                <div class="form-group">
+                    <label>Base imponible (€)</label>
+                    <input type="number" id="wiz-base" value="${wizardState.base || ''}" placeholder="Ej: 1000" oninput="wizardState.base=parseFloat(this.value)||0">
+                </div>
+                ${needIva ? `
+                <div class="form-group">
+                    <label>Tipo de IVA (%)</label>
+                    <select id="wiz-iva" onchange="wizardState.iva=parseFloat(this.value)">
+                        <option value="21" ${wizardState.iva===21?'selected':''}>21% General</option>
+                        <option value="10" ${wizardState.iva===10?'selected':''}>10% Reducido</option>
+                        <option value="4" ${wizardState.iva===4?'selected':''}>4% Superreducido</option>
+                        <option value="0" ${wizardState.iva===0?'selected':''}>0% Exento</option>
+                    </select>
+                </div>
+                ` : ''}
+                ${needRetencion ? `
+                <div class="form-group">
+                    <label>¿Tiene retención IRPF?</label>
+                    <select id="wiz-ret" onchange="wizardState.retencion=parseFloat(this.value)">
+                        <option value="0" ${wizardState.retencion===0?'selected':''}>No</option>
+                        <option value="19" ${wizardState.retencion===19?'selected':''}>19% (1er año)</option>
+                        <option value="21" ${wizardState.retencion===21?'selected':''}>21% (2º-3er año)</option>
+                        <option value="24" ${wizardState.retencion===24?'selected':''}>24% (desde 3er año)</option>
+                    </select>
+                </div>
+                ` : ''}
+                <div class="wizard-actions">
+                    <button class="btn btn-outline" onclick="wizardState.step=1;renderWizardStep()">← Atrás</button>
+                    <button class="btn btn-primary" onclick="wizardState.step=3;renderWizardStep()">Siguiente →</button>
+                </div>
+            </div>
+        `;
+    } else if (s === 3) {
+        const entry = generateWizardEntry();
+        html += `
+            <div class="wizard-step fade-in">
+                <h3>📝 Paso 3: Asiento resultante</h3>
+                <table class="entry-result">
+                    <thead><tr><th>Cuenta</th><th>Concepto</th><th>Debe</th><th>Haber</th></tr></thead>
+                    <tbody>
+                        ${entry.lines.map(l => `
+                            <tr>
+                                <td><strong>${l.acc}</strong></td>
+                                <td>${l.desc}</td>
+                                <td class="amount ${l.type==='D'?'amount-debe':''}">${l.type==='D' ? formatEUR(l.amount) : ''}</td>
+                                <td class="amount ${l.type==='C'?'amount-haber':''}">${l.type==='C' ? formatEUR(l.amount) : ''}</td>
+                            </tr>
+                        `).join('')}
+                        <tr class="entry-total">
+                            <td colspan="2"><strong>TOTALES</strong></td>
+                            <td class="amount amount-debe"><strong>${formatEUR(entry.totalDebit)}</strong></td>
+                            <td class="amount amount-haber"><strong>${formatEUR(entry.totalCredit)}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="tip-box"><strong>💡 ¿Por qué?</strong> ${entry.why}</div>
+                ${entry.tip ? `<div class="error-box" style="background:var(--primary-light);border-color:var(--primary);"><strong style="color:var(--primary);">⚠️ Recomendación:</strong> ${entry.tip}</div>` : ''}
+                <div class="wizard-actions">
+                    <button class="btn btn-outline" onclick="wizardState.step=2;renderWizardStep()">← Atrás</button>
+                    <div>
+                        <button class="btn btn-outline" onclick="window.print()" style="margin-right:8px;">🖨️ Imprimir</button>
+                        <button class="btn btn-primary" onclick="wizardState.step=4;renderWizardStep()">✔ Finalizar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (s === 4) {
+        html += `
+            <div class="wizard-step fade-in" style="text-align:center;">
+                <div style="font-size:64px;margin-bottom:16px;">✅</div>
+                <h3 style="justify-content:center;">Asiento registrado correctamente</h3>
+                <p style="color:var(--text-secondary);margin:12px 0;">Verifica los datos antes de contabilizar en tu sistema.</p>
+                <div style="margin-top:20px;">
+                    <button class="btn btn-primary btn-lg" onclick="initWizard()">🔄 Crear otro asiento</button>
+                    <button class="btn btn-outline btn-lg" style="margin-left:8px;" onclick="navigateTo('operations')">📋 Ver operaciones comunes</button>
+                </div>
+            </div>
+        `;
+    }
+    
+    c.innerHTML = html;
+}
+
+function selectWizardType(id) {
+    wizardState.type = id;
+    wizardState.step = 2;
+    renderWizardStep();
+}
+
+function generateWizardEntry() {
+    const t = wizardState.type;
+    const b = wizardState.base || 0;
+    const iv = (b * (wizardState.iva || 0)) / 100;
+    const ret = (b * (wizardState.retencion || 0)) / 100;
+    const total = b + iv - ret;
+    let lines = [], why = '', tip = '';
+    
+    switch(t) {
+        case 'compra-merc':
+            lines = [
+                { acc: "6000", desc: "Compras de mercaderías", type: "D", amount: b },
+                ...(wizardState.iva > 0 ? [{ acc: "4720", desc: "H.P. IVA Soportado", type: "D", amount: iv }] : []),
+                { acc: "4000", desc: "Proveedores", type: "C", amount: b + iv }
+            ];
+            why = "Compras (6000) es gasto → se debita al aumentar. IVA Soportado (4720) es derecho a deducir → activo → se debita. Proveedores (4000) es deuda → pasivo → se acreeda.";
+            tip = "Solo puedes deducir el IVA si la factura cumple requisitos formales (NIF, fecha, base, tipo, cuota).";
+            break;
+        case 'compra-serv':
+            lines = [
+                { acc: "6220", desc: "Servicios profesionales independientes", type: "D", amount: b },
+                ...(wizardState.iva > 0 ? [{ acc: "4720", desc: "H.P. IVA Soportado", type: "D", amount: iv }] : []),
+                ...(wizardState.retencion > 0 ? [{ acc: "4751", desc: "H.P. retenciones a cuenta (IRPF)", type: "D", amount: ret }] : []),
+                { acc: "4102", desc: "Acreedores por servicios profesionales", type: "C", amount: total }
+            ];
+            why = "Servicios profesionales es gasto → se debita. IVA soportado se deduce. La retención es un derecho de cobro del profesional → se debita como anticipación. El acreedor recibe el neto.";
+            tip = "Si el profesional no tiene retención, simplemente no incluyas 4751.";
+            break;
+        case 'compra-material':
+            lines = [
+                { acc: "2170", desc: "Equipos para procesos de información", type: "D", amount: b },
+                ...(wizardState.iva > 0 ? [{ acc: "4720", desc: "H.P. IVA Soportado", type: "D", amount: iv }] : []),
+                { acc: "4000", desc: "Proveedores", type: "C", amount: b + iv }
+            ];
+            why = "El inmovilizado es activo no corriente → se debita. IVA en inversiones puede ir a 4720 o 4751 según deducibilidad. Proveedores → pasivo → se acreeda.";
+            tip = "Si el IVA no es deducible (ej: coches de empresa), usa cuenta 4700 (IVA no deducible).";
+            break;
+        case 'venta-merc':
+            lines = [
+                { acc: "4300", desc: "Clientes", type: "D", amount: b + iv },
+                { acc: "7000", desc: "Ventas de mercaderías", type: "C", amount: b },
+                ...(wizardState.iva > 0 ? [{ acc: "4770", desc: "H.P. IVA Repercutido", type: "C", amount: iv }] : [])
+            ];
+            why = "Clientes es derecho de cobro → activo → se debita. Ventas (7000) es ingreso → se acreeda. IVA Repercutido (4770) es deuda con Hacienda → pasivo → se acreeda.";
+            tip = "El IVA repercutido NUNCA es un ingreso. Es un pasivo transitorio que debes ingresar a Hacienda trimestralmente.";
+            break;
+        case 'venta-serv':
+            lines = [
+                { acc: "4300", desc: "Clientes", type: "D", amount: b + iv },
+                { acc: "7200", desc: "Servicios vendidos", type: "C", amount: b },
+                ...(wizardState.iva > 0 ? [{ acc: "4770", desc: "H.P. IVA Repercutido", type: "C", amount: iv }] : [])
+            ];
+            why = "Clientes es activo → se debita. Servicios vendidos (7200) es ingreso → se acreeda. IVA repercutido → pasivo → se acreeda.";
+            tip = "";
+            break;
+        case 'nomina':
+            const ssEmpresa = b * 0.236;
+            const irpf = b * 0.15;
+            const ssObrero = b * 0.0635;
+            const neto = b - irpf - ssObrero;
+            lines = [
+                { acc: "6500", desc: "Sueldos y salarios", type: "D", amount: b },
+                { acc: "6520", desc: "Seguridad social a cargo de empresa", type: "D", amount: ssEmpresa },
+                { acc: "4710", desc: "H.P. retenciones IRPF", type: "C", amount: irpf },
+                { acc: "4710", desc: "H.P. Seguridad Social (cuota obrero)", type: "C", amount: ssObrero },
+                { acc: "4100", desc: "Acreedores varios (trabajadores)", type: "C", amount: neto },
+                { acc: "4710", desc: "H.P. Seguridad Social (cuota empresario)", type: "C", amount: ssEmpresa }
+            ];
+            why = "Sueldos y SS empresa son gastos → se debitan. Retenciones y SS obrero son deudas con Hacienda/TGSS → pasivo → se acreedan. El neto es lo que debes al trabajador.";
+            tip = "Los porcentajes son orientativos. La SS y el IRPF varían según convenio, situación personal y tablas vigentes.";
+            break;
+        case 'pago-prov':
+            lines = [
+                { acc: "4000", desc: "Proveedores", type: "D", amount: b },
+                { acc: "5720", desc: "Bancos", type: "C", amount: b }
+            ];
+            why = "Proveedores disminuye (pagas) → pasivo baja → se debita. Bancos disminuye (sale dinero) → activo baja → se acreeda.";
+            tip = "Si hay descuento por pronto pago, registra la diferencia en cuenta 6080.";
+            break;
+        case 'cobro-cli':
+            lines = [
+                { acc: "5720", desc: "Bancos", type: "D", amount: b },
+                { acc: "4300", desc: "Clientes", type: "C", amount: b }
+            ];
+            why = "Bancos aumenta (entra dinero) → activo → se debita. Clientes disminuyen (te pagan) → activo baja → se acreeda.";
+            tip = "";
+            break;
+        case 'prestamo':
+            lines = [
+                { acc: "5720", desc: "Bancos", type: "D", amount: b },
+                { acc: "1700", desc: "Préstamos entidades crédito a lt", type: "C", amount: b }
+            ];
+            why = "Bancos aumenta → activo → se debita. El préstamo es deuda a largo plazo → pasivo → se acreeda.";
+            tip = "Si el préstamo es a corto plazo (<1 año), usa cuenta 520.";
+            break;
+        case 'pago-intereses':
+            lines = [
+                { acc: "6700", desc: "Gastos financieros por préstamos", type: "D", amount: b },
+                { acc: "5720", desc: "Bancos", type: "C", amount: b }
+            ];
+            why = "Intereses son gasto financiero → se debita. Bancos disminuye → se acreeda.";
+            tip = "Los intereses son gasto deducible en el Impuesto sobre Sociedades.";
+            break;
+        case 'amort-material':
+            lines = [
+                { acc: "6610", desc: "Amortización inmovilizado material", type: "D", amount: b },
+                { acc: "2810", desc: "Amortización acumulada inmov. material", type: "C", amount: b }
+            ];
+            why = "Amortización es gasto → se debita. La amortización acumulada es contrapartida del activo que reduce su valor → se acreeda.";
+            tip = "Usa método lineal o el que mejor se ajuste a la vida útil real. Consulta tablas del art. 29 LIRPF.";
+            break;
+        case 'amort-intangible':
+            lines = [
+                { acc: "6600", desc: "Amortización inmovilizado intangible", type: "D", amount: b },
+                { acc: "2800", desc: "Amortización acumulada inmov. intangible", type: "C", amount: b }
+            ];
+            why = "Igual que amortización material: gasto → debe; acumulada → haber.";
+            tip = "Software: ~25% anual (4 años). Patentes: según vida legal o económica.";
+            break;
+        case 'gastos-banco':
+            const gIva = b * 0.21;
+            lines = [
+                { acc: "6250", desc: "Servicios bancarios y similares", type: "D", amount: b },
+                ...(wizardState.iva > 0 ? [{ acc: "4720", desc: "H.P. IVA Soportado", type: "D", amount: gIva }] : []),
+                { acc: "5720", desc: "Bancos", type: "C", amount: b + (wizardState.iva > 0 ? gIva : 0) }
+            ];
+            why = "Gastos bancarios es gasto de gestión corriente → se debita. IVA soportado se deduce. El banco descuenta → activo baja → se acreeda.";
+            tip = "";
+            break;
+        case 'pago-irpf':
+            lines = [
+                { acc: "4751", desc: "H.P. retenciones a cuenta", type: "D", amount: b },
+                { acc: "5720", desc: "Bancos", type: "C", amount: b }
+            ];
+            why = "Cancelas la deuda de retenciones (pasivo → se debita) y el banco paga (activo → se acreeda).";
+            tip = "Plazos: Q1(abr), Q2(jul), Q3(oct), Q4(ene). Modelo 111.";
+            break;
+        case 'pago-iva':
+            const ivR = b; // repercutido
+            const ivS = wizardState.base; // soportado
+            const cuota = ivR - ivS;
+            lines = [
+                { acc: "4770", desc: "H.P. IVA Repercutido", type: "D", amount: ivR },
+                { acc: "4720", desc: "H.P. IVA Soportado", type: "C", amount: ivS },
+                { acc: "5720", desc: "Bancos", type: "C", amount: cuota > 0 ? cuota : 0 }
+            ];
+            why = "Liquidar IVA: cancelas la deuda de repercutido contra el derecho de soportado. El resultado se ingresa en el banco.";
+            tip = "Si soportado > repercutido, tienes saldo a favor. Puedes compensar el próximo trimestre.";
+            break;
+        default:
+            lines = [
+                { acc: "????", desc: "Cuenta a definir", type: "D", amount: b },
+                { acc: "????", desc: "Cuenta a definir", type: "C", amount: b }
+            ];
+            why = "Selecciona las cuentas adecuadas según la naturaleza de la operación.";
+            tip = "Consulta el catálogo de cuentas para encontrar la cuenta correcta.";
+    }
+    
+    const totalDebit = lines.filter(l => l.type === 'D').reduce((s, l) => s + l.amount, 0);
+    const totalCredit = lines.filter(l => l.type === 'C').reduce((s, l) => s + l.amount, 0);
+    
+    return { lines, totalDebit, totalCredit, why, tip };
+}
+
+// ========================================================================
+// OPERATIONS
+// ========================================================================
+function renderOperations(filter = 'all') {
+    const grid = document.getElementById('operations-grid');
+    const filtered = filter === 'all' ? OPERATIONS : OPERATIONS.filter(o => o.category === filter);
+    
+    grid.innerHTML = filtered.map(o => `
+        <div class="op-card" id="op-${o.id}" onclick="toggleOp('${o.id}')">
+            <div class="op-card-header">
+                <span class="op-icon">${o.icon}</span>
+                <div>
+                    <h3>${o.name}</h3>
+                    <p>${o.desc}</p>
+                </div>
+            </div>
+            <div class="op-card-body">
+                <table>
+                    <thead><tr><th>Cuenta</th><th>Concepto</th><th>Debe</th><th>Haber</th></tr></thead>
+                    <tbody>
+                        ${o.entry.map(e => `
+                            <tr>
+                                <td><strong>${e.acc}</strong></td>
+                                <td>${e.desc}</td>
+                                <td class="amount ${e.type==='D'?'amount-debe':''}">${e.type==='D' ? e.amountLabel : ''}</td>
+                                <td class="amount ${e.type==='C'?'amount-haber':''}">${e.type==='C' ? e.amountLabel : ''}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+                <div class="tip-box"><strong>💡 ¿Por qué?</strong> ${o.why}</div>
+                ${o.tip ? `<div class="error-box" style="background:var(--primary-light);border-color:var(--primary);"><strong style="color:var(--primary);">⚠️ Recomendación:</strong> ${o.tip}</div>` : ''}
+                ${o.example ? `
+                <div style="margin-top:12px;background:var(--bg);padding:12px;border-radius:8px;">
+                    <strong>Ejemplo numérico:</strong>
+                    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;">
+                        ${o.example.labels.map((l,i) => `<span><span style="color:var(--text-secondary)">${l}:</span> <strong>${o.example.values[i]}</strong></span>`).join('')}
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `).join('');
+    
+    document.querySelectorAll('.op-filter').forEach(btn => {
+        btn.onclick = function() {
+            document.querySelectorAll('.op-filter').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            renderOperations(this.dataset.cat);
+        };
+    });
+}
+
+function toggleOp(id) {
+    document.getElementById('op-' + id).classList.toggle('expanded');
+}
+
+// ========================================================================
+// ERRORS
+// ========================================================================
+function renderErrors() {
+    const list = document.getElementById('errors-list');
+    list.innerHTML = COMMON_ERRORS.map((e, i) => `
+        <div class="card fade-in" style="margin-bottom:12px;">
+            <div class="card-header">
+                <h2 style="font-size:16px;">❌ ${e.title}</h2>
+                <span class="badge badge-${e.impact==='Alta'?'debe':'haber'}">Impacto: ${e.impact}</span>
+            </div>
+            <p style="font-size:14px;color:var(--text-secondary);margin-bottom:12px;">${e.desc}</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div style="background:var(--danger-light);padding:10px;border-radius:8px;">
+                    <strong style="color:var(--danger);font-size:12px;">❌ MAL:</strong>
+                    <p style="font-size:13px;margin-top:4px;">${e.wrong}</p>
+                </div>
+                <div style="background:var(--success-light);padding:10px;border-radius:8px;">
+                    <strong style="color:var(--success);font-size:12px;">✅ BIEN:</strong>
+                    <p style="font-size:13px;margin-top:4px;">${e.correct}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ========================================================================
+// IVA CALCULATOR
+// ========================================================================
+function calcularIVA() {
+    const base = parseFloat(document.getElementById('iva-base').value) || 0;
+    const tipo = parseFloat(document.getElementById('iva-tipo').value) || 0;
+    const iva = base * tipo / 100;
+    document.getElementById('iva-calc-amount').textContent = formatEUR(iva);
+    document.getElementById('iva-calc-total').textContent = formatEUR(base + iva);
+}
+
+// ========================================================================
+// UTILITIES
+// ========================================================================
+function formatEUR(n) {
+    return n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+}
+
+// Init
+renderCatalog();
+</script>
+</body>
+</html>
